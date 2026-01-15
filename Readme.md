@@ -16,7 +16,7 @@
 [Tag_repo42_minishell]: https://github.com/Lzozoflo/Minishell
 <!-- [Tag_test]: url "on hover" -->
 
-[tag_icons]: https://skillicons.dev/icons?i=js,html,css,wasm
+[tag_icons]: https://skillicons.dev/icons?i=js,html,css,c,cpp,md
 
 # LzozoFlo
 
