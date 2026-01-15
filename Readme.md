@@ -40,7 +40,6 @@
 
 <br><br><br><br><br>
 
----
 
 <details>
 <summary>👀</summary>
@@ -48,5 +47,3 @@
 ![I SEE 𝕐OU 👀][Tag_View_count]
 
 </details>
-
----
