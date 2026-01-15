@@ -8,6 +8,27 @@
 <!-- 𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡 -->
 
 
-<!-- [Tag-test]: url "on hover" -->
+[Tag_View_count]: https://komarev.com/ghpvc/?username=LzozoFlo "I SEE 𝕐OU 👀"
+[Tag_repo_Markdown]: https://github.com/Lzozoflo/Markdown
+[Tag_repo_parcoursformation]: https://github.com/Lzozoflo/Parcours_de_formation
+[Tag_repo42_webserv]: https://github.com/Lzozoflo/webserv
+[Tag_repo42_minishell]: https://github.com/Lzozoflo/Minishell
+<!-- [Tag_test]: url "on hover" -->
 
-## I SEE 𝕐OU 👀 ![I SEE 𝕐OU 👀](https://komarev.com/ghpvc/?username=LzozoFlo)
+# LzozoFlo
+
+## I SEE 𝕐OU 👀 ![I SEE 𝕐OU 👀][View_count]
+
+### Voila quelque Repo a regarder
+
+>- [Markdown][Tag_repo_Markdown]
+>- [Des Formation extern a 42][Tag_repo_parcoursformation] (surtout des formation open classroom)
+
+<details>
+<summary>Quelque repo lors de ma formation a 42</summary>
+
+>>- [Webserv][Tag_repo42_webserv]
+>>- [Minishell][Tag_repo42_minishell]
+
+</details>
+
