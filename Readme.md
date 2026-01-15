@@ -8,9 +8,6 @@
 <!-- 𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡 -->
 <!-- http://github.com/tandpfun/skill-icons#readme  -->
 
-[tag_icons]: https://skillicons.dev/icons?i=js,html,css,wasm
-
-[![My Skills]](https://skillicons.dev)
 
 [Tag_View_count]: https://komarev.com/ghpvc/?username=LzozoFlo "I SEE 𝕐OU 👀"
 [Tag_repo_Markdown]: https://github.com/Lzozoflo/Markdown
@@ -19,9 +16,11 @@
 [Tag_repo42_minishell]: https://github.com/Lzozoflo/Minishell
 <!-- [Tag_test]: url "on hover" -->
 
+[tag_icons]: https://skillicons.dev/icons?i=js,html,css,wasm
+
 # LzozoFlo
 
-## I SEE 𝕐OU 👀 ![I SEE 𝕐OU 👀][View_count]
+## I SEE 𝕐OU 👀 ![I SEE 𝕐OU 👀][Tag_View_count]
 
 ## ![My Skills][tag_icons]
 
