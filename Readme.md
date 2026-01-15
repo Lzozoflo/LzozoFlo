@@ -20,9 +20,9 @@
 
 # LzozoFlo
 
-## I SEE 𝕐OU 👀 ![I SEE 𝕐OU 👀][Tag_View_count]
-
 ## ![My Skills][tag_icons]
+
+
 
 
 ### Voila quelques Repo a regarder
@@ -38,3 +38,15 @@
 
 </details>
 
+<br><br><br><br><br>
+
+---
+
+<details>
+<summary>👀</summary>
+
+![I SEE 𝕐OU 👀][Tag_View_count]
+
+</details>
+
+---
