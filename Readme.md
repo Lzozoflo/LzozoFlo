@@ -18,7 +18,7 @@
 
 [tag_icons]: https://skillicons.dev/icons?i=bash,c,cpp,git,github,vscode,md,html,css,js,docker,godot
 
-# LzozoFlo
+# LzozoFlo / Florent Cretin
 
 ## ![My Skills][tag_icons]
 
