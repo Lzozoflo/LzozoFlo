@@ -22,16 +22,13 @@
 
 ## ![My Skills][tag_icons]
 
-
-
-
 ### Voila quelques Repo a regarder
 
 >- [Markdown][Tag_repo_Markdown]
 >- [Des Formation extern a 42][Tag_repo_parcoursformation] (surtout des formation open classroom)
 
 <details>
-<summary>Quelques repo lors de ma formation a 42</summary>
+<summary><strong>Quelques repo lors de ma formation a 42</strong></summary>
 
 >>- [Webserv][Tag_repo42_webserv]
 >>- [Minishell][Tag_repo42_minishell]
