@@ -24,15 +24,46 @@ alias codereadme="code $blueprint"
 
 place() {
 
-    # cmd help
+    # Help
     if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-        echo "Usage: place [the path after your home]"
-        return 1
+        echo "Usage:"
+        echo "  place dossier"
+        echo "  place -rm dossier"
+        echo "  place -rmfr dossier"
+        return 0
     fi
 
-    du -h $HOME/$1 --max-depth=1 | sort -hr | head -n 20
+    # rm interactif (dossier)
+    if [[ "$1" == "-rm" ]]; then
+        if [[ -z "$2" ]]; then
+            echo "Specify a path."
+            return 1
+        fi
+        rm -ri "$HOME/$2"
+        return $?
+    fi
+   
 
+    # affichage espace disque
+    df -h "$HOME" | tail -n 1
+
+    echo ""
+
+    # rm interactif (dossier)
+    du -h "$HOME/$1" --max-depth=1 2>/dev/null | sort -hr | head -n 15
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # help

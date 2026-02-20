@@ -10,5 +10,5 @@ export djavescript="$dformation_extern/JavaScript"
 export dtypescript="$dformation_extern/TypeScript"
 export dmarkdown="$dformation_extern/Markdown"
 export dlzozoflo="$dformation_extern/profile"
+export dalss="$dlzozoflo/.alias"
 export dreact="$dformation_extern/React"
-

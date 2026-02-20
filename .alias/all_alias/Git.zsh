@@ -1,10 +1,10 @@
 
 alias gm='git add . && git commit -m'
+alias gw='git switch -'
+
 
 alias remote_n_u='git remote add'
-
 alias rv='git remote -v'
-
 
 
 
