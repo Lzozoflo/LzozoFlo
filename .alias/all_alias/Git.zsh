@@ -36,6 +36,86 @@ push() {
 
 
 
+mymerge() {
+    local branch_actuel=$(git branch --show-current)
+    local branch_a_update=$1
+    
+    # 1. Vérifications de base
+    if [ -z "$branch_actuel" ]; then
+        echo "Erreur : Pas dans un dépôt Git."
+        return 1
+    fi
+
+    if [ -z "$branch_a_update" ] || ! git show-ref --verify --quiet "refs/heads/$branch_a_update"; then
+        echo "Erreur : La branche '$branch_a_update' est invalide ou absente."
+        return 1
+    fi
+
+    echo -n "Confirmer avoir bien tout push sur votre propre branch ? (y/p(utilise push)/n) : "
+    read choice
+    case "$choice" in 
+        y|Y ) echo "";;
+        p|P ) echo 'Effectue un git add/commit/push'
+              echo -n 'Entrer entre "" votre commit: '
+            read choice
+            echo "choice: $choice"
+            push $choice || return 1;;
+
+        n|N ) echo "Annulation" 
+            return 1 ;;
+        * ) echo "Réponse invalide"
+            return 1 ;;
+    esac
+
+    
+    # 2. Confirmation unique et claire
+    echo "--- RÉCAPITULATIF ---"
+    echo "Branche actuelle        : '$branch_actuel'"
+    echo "Branche à mettre à jour : '$branch_a_update'"
+    echo "----------------------"
+    echo -n "Confirmer le cycle merge/push ? (y/n) : "
+    read choice
+
+    case "$choice" in 
+        y|Y ) 
+            echo "Lancement des opérations..."
+            updatemerge "$branch_a_update"
+            ;;
+        *) 
+            echo "Annulation."
+            return 1 
+            ;;
+    esac
+}
+
+updatemerge() {
+    local branch_actuel=$(git branch --show-current)
+    local branch_a_update=$1
+
+    # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
+    echo "-> Update $branch_a_update..."
+    git switch "$branch_a_update" && git pull || return 1
+
+    echo "-> Merge $branch_a_update dans $branch_actuel..."
+    git switch "$branch_actuel" && git merge "$branch_a_update" && git push || return 1
+
+    echo "-> Merge $branch_actuel dans $branch_a_update..."
+    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || return 1
+
+    # Retour final sur la branche d'origine
+    git switch "$branch_actuel"
+    echo "Terminé avec succès !"
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

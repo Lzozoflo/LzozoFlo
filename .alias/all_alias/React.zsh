@@ -18,18 +18,18 @@ createjsx(){
 
     mkdir $1
     
-    touch $1/$1.css
+    touch $1/$1.scss
     
     echo "/* Css */
-import \"./$1.css\";
+import \"./$1.scss\";
 
 /* Components */
     
 export default function $1() {
     return (
-        <>
-
-        </>
+        <div className={\`$1\`}>
+        yo c'est david la farge
+        </div>
     )
 }" > $1/$1.jsx
 

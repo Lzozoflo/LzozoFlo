@@ -15,8 +15,9 @@ export dcpp9="$dproject/CPP_09"
 
 
 export dtranscendence="$dproject/ft_transcendence"
-export dfront="$dtranscendence/web/site/go/src"
-export dpage="$dtranscendence/web/site/go/src/Components/Navigation/Page"
+export dfront="$dtranscendence/web/front"
+export dback="$dtranscendence/web/back/src"
+export dpage="$dfront/src/page"
 
 
 ##########################################################
