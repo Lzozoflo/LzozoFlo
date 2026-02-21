@@ -16,6 +16,11 @@ alias psuh="p"
 
 alias mergedev='mymerge "dev/frontend-hot-reload"'
 
+is_dirty() {
+    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
+    [[ -n $(git status --porcelain) ]]
+}
+
 
 ## git cmd push faster
 push() {
@@ -39,6 +44,15 @@ push() {
 updatemerge() {
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
+
+
+    # Utilisation dans votre switchmerge :
+    if is_dirty; then
+        echo "Erreur : Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
+        echo "Veuillez commit ou stash vos changements avant de continuer."
+        git status -s
+        return 1
+    fi
 
     # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
     echo "-> Update $branch_a_update..."
