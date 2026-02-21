@@ -14,6 +14,7 @@ alias psuh="p"
 
 
 
+export dtranscendence="$dproject/ft_transcendence"
 alias mergedev='mymerge "dev/frontend-hot-reload"'
 
 is_dirty() {
@@ -45,18 +46,29 @@ updatemerge() {
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
 
+    sleep 0.1
+
     # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
     echo "-> Update $branch_a_update..."
     git switch "$branch_a_update" && git pull || return 1
 
+    sleep 0.1
+
     echo "-> Merge $branch_a_update dans $branch_actuel..."
     git switch "$branch_actuel" && git merge "$branch_a_update" && git push || return 1
+
+    sleep 0.1
 
     echo "-> Merge $branch_actuel dans $branch_a_update..."
     git switch "$branch_a_update" && git merge "$branch_actuel" && git push || return 1
 
+    sleep 0.1
+
     # Retour final sur la branche d'origine
     git switch "$branch_actuel"
+
+    sleep 0.1
+
     echo "Terminé avec succès !"
 }
 
@@ -65,30 +77,39 @@ is_dirty() {
     # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
     [[ -n $(git status --porcelain) ]]
 }
+
 mymerge() {
+    cd $dtranscendence || return 1
+    
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
     
     # 1. Vérifications de base
     if [ -z "$branch_actuel" ]; then
-        echo "Erreur : Pas dans un dépôt Git."
+        echo "Pas dans un dépôt Git."
         return 1
     fi
-
     if [ -z "$branch_a_update" ] || ! git show-ref --verify --quiet "refs/heads/$branch_a_update"; then
-        echo "Erreur : La branche '$branch_a_update' est invalide ou absente."
+        echo "La branche '$branch_a_update' est invalide ou absente."
         return 1
     fi
 
-    # Utilisation dans votre switchmerge :
+
+    # 2. Vérifications du status
     if is_dirty; then
-        echo "Erreur : Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
+
+        echo "Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
+
         git status -s
-        echo "Veuillez commit vos changements avant de continuer."
-        echo "Voulez vous utiliser push qui [add/commit/push] (y/n) : "
+
+        echo "Veuillez commit vos changements avant de continuer.\n"
+
+        echo -n "Voulez vous utiliser push qui [add/commit/push] (y/n) : "
+        read choice
+
         case "$choice" in 
             y|Y ) echo 'Effectue un git add/commit/push'
-                echo -n 'Entrer votre commit entre "" : '
+                echo -n 'Entrer votre commit sans les "" : '
                 read choice
                 push $choice || return 1;;
             n|N ) echo "Annulation" 
@@ -99,7 +120,7 @@ mymerge() {
     fi
 
     
-    # 2. Confirmation unique et claire
+    # 3. Confirmation unique et claire
     echo "--- RÉCAPITULATIF ---"
     echo "Branche actuelle        : '$branch_actuel'"
     echo "Branche à mettre à jour : '$branch_a_update'"

@@ -2,6 +2,29 @@
 alias run="npm install && npm run dev"
 alias build="npm run build"
 
+headercpyjsx(){
+    headerjsx > "$1.tmp"
+
+    cat "$1" | >> "$1.tmp"
+
+    mv "$1.tmp" "$1"
+}
+
+headerjsx(){
+
+    
+    echo "/* extern */
+import { useEffect, useState } from "react";
+
+/* back */
+import checkCo from "BACK/fct1.js"
+
+/* Css */
+import \"./$1.scss\";
+
+/* Components */"
+
+}
 
 createjsx(){
 
@@ -20,10 +43,10 @@ createjsx(){
     
     touch $1/$1.scss
     
-    echo "/* Css */
-import \"./$1.scss\";
+    headerjsx $1
 
-/* Components */
+    echo "
+
     
 export default function $1() {
     return (
