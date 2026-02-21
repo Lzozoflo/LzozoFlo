@@ -45,15 +45,6 @@ updatemerge() {
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
 
-
-    # Utilisation dans votre switchmerge :
-    if is_dirty; then
-        echo "Erreur : Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
-        echo "Veuillez commit ou stash vos changements avant de continuer."
-        git status -s
-        return 1
-    fi
-
     # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
     echo "-> Update $branch_a_update..."
     git switch "$branch_a_update" && git pull || return 1
@@ -70,7 +61,10 @@ updatemerge() {
 }
 
 
-
+is_dirty() {
+    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
+    [[ -n $(git status --porcelain) ]]
+}
 mymerge() {
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
@@ -86,20 +80,23 @@ mymerge() {
         return 1
     fi
 
-    echo -n "Confirmer avoir bien tout push sur votre propre branch ? (y/p(utilise push)/n) : "
-    read choice
-    case "$choice" in 
-        y|Y ) echo "";;
-        p|P ) echo 'Effectue un git add/commit/push'
-              echo -n 'Entrer entre "" votre commit: '
-            read choice
-            push $choice || return 1;;
-
-        n|N ) echo "Annulation" 
-            return 1 ;;
-        * ) echo "Réponse invalide"
-            return 1 ;;
-    esac
+    # Utilisation dans votre switchmerge :
+    if is_dirty; then
+        echo "Erreur : Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
+        git status -s
+        echo "Veuillez commit vos changements avant de continuer."
+        echo "Voulez vous utiliser push qui [add/commit/push] (y/n) : "
+        case "$choice" in 
+            y|Y ) echo 'Effectue un git add/commit/push'
+                echo -n 'Entrer votre commit entre "" : '
+                read choice
+                push $choice || return 1;;
+            n|N ) echo "Annulation" 
+                return 1 ;;
+            * ) echo "Réponse invalide"
+                return 1 ;;
+        esac
+    fi
 
     
     # 2. Confirmation unique et claire
