@@ -14,7 +14,7 @@ alias psuh="p"
 
 
 
-
+alias mergedev='mymerge "dev/frontend-hot-reload"'
 
 
 ## git cmd push faster
@@ -25,13 +25,34 @@ push() {
         return 1
     fi
 
-    git add .
+    git add . || return 1
     
-    git commit -m $1
+    git commit -m $1 || return 1
     
-    sleep 0.5
+    sleep 0.5 || return 1
     
-    git push
+    git push || return 1
+}
+
+
+
+updatemerge() {
+    local branch_actuel=$(git branch --show-current)
+    local branch_a_update=$1
+
+    # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
+    echo "-> Update $branch_a_update..."
+    git switch "$branch_a_update" && git pull || return 1
+
+    echo "-> Merge $branch_a_update dans $branch_actuel..."
+    git switch "$branch_actuel" && git merge "$branch_a_update" && git push || return 1
+
+    echo "-> Merge $branch_actuel dans $branch_a_update..."
+    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || return 1
+
+    # Retour final sur la branche d'origine
+    git switch "$branch_actuel"
+    echo "Terminé avec succès !"
 }
 
 
@@ -58,7 +79,6 @@ mymerge() {
         p|P ) echo 'Effectue un git add/commit/push'
               echo -n 'Entrer entre "" votre commit: '
             read choice
-            echo "choice: $choice"
             push $choice || return 1;;
 
         n|N ) echo "Annulation" 
@@ -87,27 +107,6 @@ mymerge() {
             ;;
     esac
 }
-
-updatemerge() {
-    local branch_actuel=$(git branch --show-current)
-    local branch_a_update=$1
-
-    # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
-    echo "-> Update $branch_a_update..."
-    git switch "$branch_a_update" && git pull || return 1
-
-    echo "-> Merge $branch_a_update dans $branch_actuel..."
-    git switch "$branch_actuel" && git merge "$branch_a_update" && git push || return 1
-
-    echo "-> Merge $branch_actuel dans $branch_a_update..."
-    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || return 1
-
-    # Retour final sur la branche d'origine
-    git switch "$branch_actuel"
-    echo "Terminé avec succès !"
-}
-
-
 
 
 
