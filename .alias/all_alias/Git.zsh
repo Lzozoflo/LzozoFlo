@@ -167,7 +167,8 @@ mymerge() {
         esac
     fi
 
-    
+    cd -
+
     # 3. Confirmation unique et claire
     echo "${TXT_JAUNE}--- RÉCAPITULATIF ---"
     echo "Branche actuelle        : '$branch_actuel'"
