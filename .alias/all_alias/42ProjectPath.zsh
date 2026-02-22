@@ -15,9 +15,11 @@ export dcpp9="$dproject/CPP_09"
 
 
 export dtranscendence="$dproject/ft_transcendence"
-export dfront="$dtranscendence/web/front"
 export dback="$dtranscendence/web/back/src"
+export dfront="$dtranscendence/web/front"
 export dpage="$dfront/src/page"
+export dstyle="$dfront/src/style"
+export fborder="$dfront/src/style/global/border.scss"
 
 
 ##########################################################

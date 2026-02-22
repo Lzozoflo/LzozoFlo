@@ -1,13 +1,3 @@
-
-TXT_NOIR='\e[30m'
-TXT_ROUGE='\e[31m'
-TXT_VERT='\e[32m'
-TXT_JAUNE='\e[33m'
-TXT_BLEU='\e[34m'
-TXT_MAGENTA='\e[35m'
-TXT_CYAN='\e[36m'
-TXT_BLANC='\e[37m'
-
 alias gm='git add . && git commit -m'
 alias gw='git switch -'
 
@@ -130,7 +120,7 @@ is_dirty() {
 
 mymerge() {
 
-    find_dot_git || return 1; 
+    find_dot_git || return 1;
     
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1

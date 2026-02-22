@@ -1,4 +1,44 @@
 ############################################################
+
+
+export dstyle="$dfront/src/style"
+
+scss_transcendence_add() {
+
+    if [[ -z "$1" ]]; then
+        echo -e "${TXT_ROUGE}[Erreur]: aucun nom de variable !${RESET}"
+        echo -e "${TXT_JAUNE}[Info]: voila tout les variable a changer... ${RESET}"
+        cat $dstyle/_variable.scss
+        return 1
+    fi
+    if [[ -z "$2" ]]; then
+        echo -e "${TXT_ROUGE}[Erreur]: aucune valeur pour $1: ?;${RESET}"
+        return 1
+    fi
+    grep -q "\$$1:" "$dstyle/_variable.scss" && { echo -e "${TXT_ROUGE}Erreur: Le Noms de cette Variable est deja utiliser !${RESET}\n${TXT_JAUNE}[Info] Utiliser plutot [scss_transcendence_change]${RESET}"; grep "\$$1:" "$dstyle/_variable.scss"; return 1; }
+    echo -n "\$$1: $2;" >> $dstyle/_variable.scss
+}
+
+scss_transcendence_change() {
+
+    if [[ -z "$1" ]]; then
+        echo -e "${TXT_ROUGE}[Erreur]: aucun nom de variable !${RESET}"
+        echo -e "${TXT_JAUNE}[Info]: voila tout les variable a changer... ${RESET}"
+        cat $dstyle/_variable.scss
+        return 1
+    fi
+    if [[ -z "$2" ]]; then
+        echo -e "${TXT_ROUGE}[Erreur]: aucune valeur pour $1: ?;${RESET}"
+        return 1
+    fi
+
+    grep -q "\$$1:" "$dstyle/_variable.scss" && grep "\$$1:" "$dstyle/_variable.scss" || { echo -e "${TXT_ROUGE}Erreur: Aucune Variable du nom de $1${RESET}"; return 1; }
+    sed -i "s/\$$1: .*/\$$1: $2;/" "$dstyle/_variable.scss"
+    echo -e "${GRAS}${TXT_ROUGE}\$$1:${RESET} $2;"
+}
+
+
+
 alias run="npm install && npm run dev"
 alias build="npm run build"
 
@@ -57,22 +97,6 @@ export default function $1() {
 }" >> $1/$1.jsx
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 initreact() {
