@@ -43,7 +43,7 @@ createjsx(){
     
     touch $1/$1.scss
     
-    headerjsx $1
+    headerjsx > $1/$1.jsx
 
     echo "
 
@@ -54,7 +54,7 @@ export default function $1() {
         yo c'est david la farge
         </div>
     )
-}" > $1/$1.jsx
+}" >> $1/$1.jsx
 
 }
 
