@@ -26,28 +26,52 @@ alias psuh="p"
 export dtranscendence="$dproject/ft_transcendence"
 alias mergedev='mymerge "dev/frontend-hot-reload"'
 
+
+
+
+
+
+
+
+
+
+
+# Fonction interne pour trouver le chemin sans déplacer le parent
+_get_git_root() {
+    if [ -d ".git" ]; then
+        pwd
+        return 0
+    fi
+    [ "$(pwd)" = "/" ] && return 1
+    (cd .. && _get_git_root)
+}
+
+# Fonction principale à appeler
+find_dot_git() {
+    local target
+    target=$(_get_git_root)
+
+    if [ $? -eq 0 ]; then
+        cd "$target"
+    else
+        echo -e "${TXT_ROUGE}Aucun dépôt .git trouvé.${RESET}"
+        return 1
+    fi
+}
+
+
+
+
+
+
+
+
+
 is_dirty() {
     # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
     [[ -n $(git status --porcelain) ]]
 }
 
-find_dot_git() {
-    # Si le dossier .git existe ici, on s'arrête
-    if [ -d ".git" ]; then
-        # echo "Dépôt trouvé dans : $(pwd)"
-        return 0
-    fi
-
-    # Si on arrive à la racine du système sans avoir trouvé .git
-    if [ "$(pwd)" = "/" ]; then
-        # echo "Aucun dépôt .git trouvé."
-        return 1
-    fi
-
-    # On remonte d'un niveau dans le shell actuel (pas de parenthèses)
-    cd ..
-    find_dot_git
-}
 
 ## git cmd push faster
 push() {
@@ -106,7 +130,7 @@ is_dirty() {
 
 mymerge() {
 
-    find_dot_git || { echo -e "${TXT_ROUGE}Pas dans un dépôt Git.${RESET}"; return 1; }
+    find_dot_git || return 1; 
     
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
