@@ -52,17 +52,6 @@ find_dot_git() {
 
 
 
-
-
-
-
-
-is_dirty() {
-    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
-    [[ -n $(git status --porcelain) ]]
-}
-
-
 ## git cmd push faster
 push() {
     # Vérifier qu'un argument est fourni
@@ -89,17 +78,17 @@ updatemerge() {
     sleep 0.1
 
     # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
-    echo "[Info] Update $branch_a_update..."
+    echo "${TXT_JAUNE}[Info] Update $branch_a_update...${RESET}"
     git switch "$branch_a_update" && git pull || return 1
 
     sleep 0.1
 
-    echo "[Info] Merge $branch_a_update dans $branch_actuel..."
+    echo "${TXT_JAUNE}[Info] Merge $branch_a_update dans $branch_actuel...${RESET}"
     git switch "$branch_actuel" && git merge "$branch_a_update" && git push || return 1
 
     sleep 0.1
 
-    echo "[Info] Merge $branch_actuel dans $branch_a_update..."
+    echo "${TXT_JAUNE}[Info] Merge $branch_actuel dans $branch_a_update...${RESET}"
     git switch "$branch_a_update" && git merge "$branch_actuel" && git push || return 1
 
     sleep 0.1
@@ -109,7 +98,7 @@ updatemerge() {
 
     sleep 0.1
 
-    echo "Terminé avec succès !"
+    echo "${TXT_VERT}Terminé avec succès !${RESET}"
 }
 
 
@@ -122,17 +111,10 @@ mymerge() {
 
     find_dot_git || return 1;
     
-    local branch_actuel=$(git branch --show-current)
-    local branch_a_update=$1
-    
-
-    if [ -z "$branch_a_update" ] || ! git show-ref --verify --quiet "refs/heads/$branch_a_update"; then
-        echo "${TXT_ROUGE}La branche '$branch_a_update' est invalide ou absente.${RESET}"
-        return 1
-    fi
 
 
-    # 2. Vérifications du status
+
+    # Vérifications du status
     if is_dirty; then
 
         echo "${TXT_JAUNE}[INFO] Vous avez des modifications en cours (fichiers modifiés ou non suivis).${RESET}"
@@ -143,7 +125,6 @@ mymerge() {
 
         echo -n "${TXT_BLEU}Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}"
         read choice
-        echo -n "${RESET}"
 
         case "$choice" in 
             y|Y ) echo "${TXT_JAUNE}[INFO] Effectue un git add/commit/push${RESET}"
@@ -158,7 +139,16 @@ mymerge() {
     fi
 
     cd -
+    
+    local branch_actuel=$(git branch --show-current)
+    local branch_a_update=$1
+    
 
+    if [ -z "$branch_a_update" ] || ! git show-ref --verify --quiet "refs/heads/$branch_a_update"; then
+        echo "${TXT_ROUGE}La branche '$branch_a_update' est invalide ou absente.${RESET}"
+        return 1
+    fi
+    
     # 3. Confirmation unique et claire
     echo "${TXT_JAUNE}--- RÉCAPITULATIF ---"
     echo "Branche actuelle        : '$branch_actuel'"
@@ -169,7 +159,7 @@ mymerge() {
 
     case "$choice" in 
         y|Y ) 
-            echo "Lancement des opérations..."
+            echo "${TXT_JAUNE}Lancement des opérations...${RESET}"
             updatemerge "$branch_a_update"
             ;;
         *) 

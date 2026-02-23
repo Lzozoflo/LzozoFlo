@@ -59,11 +59,50 @@ place() {
 
 
 
+# ${TXT_}
+# ${RESET}
 
 
 
+addheader_infilef(){
+    # Vérifier qu'un argument
+    if [[ -z "$1" ]]; then
+        echo "${TXT_ROUGE}[Erreur] : Rien a ajouter !${RESET}"
+        return 1
+    fi
 
+    # Vérifier qu'un argument est fourni
+    if [[ -z "$2" ]]; then
+        echo "${TXT_ROUGE}[Erreur] : aucun nom de fichier fourni !${RESET}"
+        return 1
+    fi
 
+    $1 $2 > "$2.tmp"
+
+    cat "$2" | >> "$2.tmp"
+
+    mv "$2.tmp" "$2"
+}
+
+addheader_infile(){
+    # Vérifier qu'un argument
+    if [[ -z "$1" ]]; then
+        echo "${TXT_ROUGE}[Erreur] : Rien a ajouter !${RESET}"
+        return 1
+    fi
+
+    # Vérifier qu'un argument est fourni
+    if [[ -z "$2" ]]; then
+        echo "${TXT_ROUGE}[Erreur] : aucun nom de fichier fourni !${RESET}"
+        return 1
+    fi
+
+    echo $1 > "$2.tmp"
+
+    cat "$2" | >> "$2.tmp"
+
+    mv "$2.tmp" "$2"
+}
 
 
 # help

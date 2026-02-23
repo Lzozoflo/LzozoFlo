@@ -3,6 +3,11 @@
 
 export dstyle="$dfront/src/style"
 
+
+
+
+
+
 scss_transcendence_add() {
 
     if [[ -z "$1" ]]; then
@@ -16,7 +21,7 @@ scss_transcendence_add() {
         return 1
     fi
     grep -q "\$$1:" "$dstyle/_variable.scss" && { echo -e "${TXT_ROUGE}Erreur: Le Noms de cette Variable est deja utiliser !${RESET}\n${TXT_JAUNE}[Info] Utiliser plutot [scss_transcendence_change]${RESET}"; grep "\$$1:" "$dstyle/_variable.scss"; return 1; }
-    echo -n "\$$1: $2;" >> $dstyle/_variable.scss
+    echo "\$$1: $2;" >> $dstyle/_variable.scss
 }
 
 scss_transcendence_change() {
@@ -42,17 +47,11 @@ scss_transcendence_change() {
 alias run="npm install && npm run dev"
 alias build="npm run build"
 
-headercpyjsx(){
-    headerjsx > "$1.tmp"
-
-    cat "$1" | >> "$1.tmp"
-
-    mv "$1.tmp" "$1"
+headerscss(){
+echo '@use "STYLE/variable" as var;\n'
 }
 
 headerjsx(){
-
-    
     echo "/* extern */
 import { useEffect, useState } from "react";
 
@@ -63,7 +62,6 @@ import checkCo from "BACK/fct1.js"
 import \"./$1.scss\";
 
 /* Components */"
-
 }
 
 createjsx(){
