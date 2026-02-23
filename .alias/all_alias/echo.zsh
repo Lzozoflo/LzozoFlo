@@ -31,6 +31,8 @@ FOND_MAGENTA='\e[45m'
 FOND_CYAN='\e[46m'
 FOND_BLANC='\e[47m'
 
+
+
 color(){
 
 
@@ -75,4 +77,33 @@ color(){
     esac
 
     echo -e "${type_choice}${bg_choice}${color_choice}${1}${RESET}"
+}
+
+
+print_status(){
+
+    # Vérifier qu'un argument est fourni
+    if [[ -z "$1" ]]; then
+        echo "${TXT_ROUGE}[Erreur] : aucun status fourni !${RESET}"
+        echo "${TXT_JAUNE}[Info] : voici la liste des status dispo...${RESET}"
+        echo "${TXT_GREEN}[Success] : ceci est vert tu a success bg...${RESET}"
+        echo "Du coup : ${TXT_ROUGE}'Erreur'${TXT_JAUNE}'Info'${TXT_GREEN}'Success'${RESET}"
+        return 1
+    fi    # Vérifier qu'un argument est fourni
+    if [[ -z "$2" ]]; then
+        echo "${TXT_JAUNE}[Info] : Euh ta rien mis a print la${RESET}"
+        return 1
+    fi
+
+    local color=$TXT_BLANC
+    local status_print=$TXT_BLANC
+
+    case $1 in
+        "Erreur"|"[Erreur]"|"Error"|"[Error]"|"error"|"erreur") color=$TXT_ROUGE status_print="[Error]";;
+        "Success"|"[Success]"|"success") color=$TXT_VERT status_print="[Success]";;
+        "Info"|"[Info]"|"info") color=$TXT_JAUNE status_print="[Info]";;
+        *) color=$TXT_BLANC status_print="[unknow]";;
+    esac
+
+    echo -e $3 "$color$status_print : $2${RESET}"
 }

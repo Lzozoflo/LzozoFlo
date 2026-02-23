@@ -48,7 +48,10 @@ alias run="npm install && npm run dev"
 alias build="npm run build"
 
 headerscss(){
-echo '@use "STYLE/variable" as var;\n'
+echo '// @use "STYLE/variable" as var;'
+echo '//    var.$border_value;\n'
+echo '// @use "STYLE/_mixin" as mix;'
+echo '//    @include mix.full;\n'
 }
 
 headerjsx(){

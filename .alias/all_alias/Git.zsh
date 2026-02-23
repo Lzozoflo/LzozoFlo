@@ -14,12 +14,13 @@ alias psuh="p"
 
 
 export dtranscendence="$dproject/ft_transcendence"
+
+
+
+
+
 alias mergedev='mymerge "dev/frontend-hot-reload"'
-
-
-
-
-
+alias pulldev='pullbranch "dev/frontend-hot-reload"'
 
 
 
@@ -56,7 +57,7 @@ find_dot_git() {
 push() {
     # Vérifier qu'un argument est fourni
     if [[ -z "$1" ]]; then
-        echo "Erreur : aucun nom de commit fourni !"
+        echo "${TXT_ROUGE}[Erreur] : aucun nom de commit fourni !${RESET}"
         return 1
     fi
 
@@ -70,26 +71,34 @@ push() {
 }
 
 
-
-updatemerge() {
+pullbranch() {
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
 
     sleep 0.1
 
     # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
-    echo "${TXT_JAUNE}[Info] Update $branch_a_update...${RESET}"
-    git switch "$branch_a_update" && git pull || return 1
+    print_status info "Update $branch_a_update..."
+    git switch "$branch_a_update" && git pull || { print_status error "[pullbranch(1)] ta eu un problème bon chance poto" ; return 1}
 
     sleep 0.1
 
-    echo "${TXT_JAUNE}[Info] Merge $branch_a_update dans $branch_actuel...${RESET}"
-    git switch "$branch_actuel" && git merge "$branch_a_update" && git push || return 1
+    print_status info "Merge $branch_a_update dans $branch_actuel..."
+    git switch "$branch_actuel" && git merge "$branch_a_update" && git push || { print_status error "[pullbranch(2)] ta eu un problème bon chance poto";print_status info "ta juste quelque conflict fait moi ca sur vscode et recommence"; return 2}
 
-    sleep 0.1
+    print_status success "la branch '$branch_actuel' a bien été update avec la branch '$branch_a_update' !"
+}
 
-    echo "${TXT_JAUNE}[Info] Merge $branch_actuel dans $branch_a_update...${RESET}"
-    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || return 1
+
+updatemerge() {
+
+    pullbranch $1 || return $?
+    
+    local branch_actuel=$(git branch --show-current)
+    local branch_a_update=$1
+
+    print_status info "Merge $branch_actuel dans $branch_a_update..."
+    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || { print_status error "[updatemerge(1)] ta eu un problème bon chance poto" ; return 3}
 
     sleep 0.1
 
@@ -98,7 +107,7 @@ updatemerge() {
 
     sleep 0.1
 
-    echo "${TXT_VERT}Terminé avec succès !${RESET}"
+    print_status success "Pull et merge fini !"
 }
 
 
@@ -117,18 +126,18 @@ mymerge() {
     # Vérifications du status
     if is_dirty; then
 
-        echo "${TXT_JAUNE}[INFO] Vous avez des modifications en cours (fichiers modifiés ou non suivis).${RESET}"
+        print_status info "Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
 
         git status -s
 
-        echo "${TXT_JAUNE}[INFO] Veuillez commit vos changements avant de continuer...${RESET}\n"
+        print_status info "Veuillez commit vos changements avant de continuer...\n"
 
         echo -n "${TXT_BLEU}Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}"
         read choice
 
         case "$choice" in 
-            y|Y ) echo "${TXT_JAUNE}[INFO] Effectue un git add/commit/push${RESET}"
-                echo -n "\t${TXT_VERT}Entrer votre commit sans les ${TXT_ROUGE}''${RESET} : "
+            y|Y ) print_status info "Effectue un git add/commit/push"
+                print_status success "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
                 read choice
                 push $choice || return 1;;
             n|N ) echo "${TXT_ROUGE}Annulation${RESET}" 
@@ -145,15 +154,15 @@ mymerge() {
     
 
     if [ -z "$branch_a_update" ] || ! git show-ref --verify --quiet "refs/heads/$branch_a_update"; then
-        echo "${TXT_ROUGE}La branche '$branch_a_update' est invalide ou absente.${RESET}"
+        print_status error "La branche '$branch_a_update' est invalide ou absente."
         return 1
     fi
     
     # 3. Confirmation unique et claire
-    echo "${TXT_JAUNE}--- RÉCAPITULATIF ---"
-    echo "Branche actuelle        : '$branch_actuel'"
-    echo "Branche à mettre à jour : '$branch_a_update'"
-    echo "----------------------${RESET}"
+    print_status info "--- RÉCAPITULATIF ---"
+    print_status info "Branche actuelle        : '$branch_actuel'"
+    print_status info "Branche à mettre à jour : '$branch_a_update'"
+    print_status info "----------------------${RESET}"
     echo -n "${TXT_VERT}Confirmer le cycle merge/push ? (y/n) : ${RESET}"
     read choice
 
