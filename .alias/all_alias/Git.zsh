@@ -13,10 +13,6 @@ alias psuh="p"
 
 
 
-export dtranscendence="$dproject/ft_transcendence"
-
-
-
 
 
 alias mergedev='mymerge "dev/frontend-hot-reload"'
@@ -90,7 +86,7 @@ pullbranch() {
 }
 
 
-updatemerge() {
+mergebranch() {
 
     pullbranch $1 || return $?
     
@@ -98,7 +94,7 @@ updatemerge() {
     local branch_a_update=$1
 
     print_status info "Merge $branch_actuel dans $branch_a_update..."
-    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || { print_status error "[updatemerge(1)] ta eu un problème bon chance poto" ; return 3}
+    git switch "$branch_a_update" && git merge "$branch_actuel" && git push || { print_status error "[mergebranch(1)] ta eu un problème bon chance poto" ; return 3}
 
     sleep 0.1
 
@@ -169,7 +165,7 @@ mymerge() {
     case "$choice" in 
         y|Y ) 
             echo "${TXT_JAUNE}Lancement des opérations...${RESET}"
-            updatemerge "$branch_a_update"
+            mergebranch "$branch_a_update"
             ;;
         *) 
             echo "${TXT_ROUGE}Annulation.${RESET}"

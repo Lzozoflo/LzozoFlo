@@ -17,9 +17,13 @@ alias mvfull='m && vfull'
 
 
 # Readme
-export blueprint="$d_markdown/Blueprint/BluePrintReadMeMain.md"
-alias addreadme="cp $blueprint Readme.md -r"
-alias codereadme="code $blueprint"
+load_blueprint_export() {
+    export blueprint="$d_markdown/Blueprint/BluePrintReadMeMain.md"
+    alias addreadme="cp $blueprint Readme.md -r"
+    alias codereadme="code $blueprint"
+}
+
+
 
 
 place() {

@@ -29,10 +29,7 @@ export dproject="$HOME/project"
 
 
 
-
-
-
-# project
+load_project_export(){
 # ├── CPP_00
     export dcpp0="$dproject/CPP_00"
 # ├── CPP_02
@@ -63,8 +60,7 @@ export dproject="$HOME/project"
 # ├── rush
 # └── webserv
     export dwebserve="$dproject/webserv"
-
-
+}
 
 
 
@@ -97,6 +93,9 @@ export dproject="$HOME/project"
 
 
 ##########################################################
+
+load_formation_extern_export(){
+
 # formation_extern
 # ├── event
 # ├── Extensions_Matrix_42lyon
@@ -113,5 +112,4 @@ export dproject="$HOME/project"
 # └── TypeScript
     export dtypescript="$dformation_extern/TypeScript"
 
-
-
+}

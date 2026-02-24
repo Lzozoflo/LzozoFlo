@@ -36,16 +36,27 @@
         done
     fi
 
+    # Condition
+    if [[ "$USER" != "fcretin" ]]; then
+        export sprivuser="/sgoinfre/$USER/private" #chmod 750
+        export spubuser="/sgoinfre/$USER/public" #chmod 755
+        export ALIAS_USER="$suser/.alias/"
+        alias alssu='code $ALIAS_USER'
+        # Cherche et charge tous les .zsh dans $ALIAS_USER et ses sous-dossiers
+        if [ -d "$ALIAS_USER" ]; then
+            for file in $(find "$ALIAS_USER" -name "*.zsh"); do
+                source "$file"
+            done
+        fi
+    fi
 
-    export sprivuser="/sgoinfre/$USER/private" #chmod 750
-    export spubuser="/sgoinfre/$USER/public" #chmod 755
-    export ALIAS_USER="$suser/.alias/"
-    alias alssu='code $ALIAS_USER'
-    # Cherche et charge tous les .zsh dans $ALIAS_USER et ses sous-dossiers
-    if [ -d "$ALIAS_USER" ]; then
-        for file in $(find "$ALIAS_USER" -name "*.zsh"); do
-            source "$file"
-        done
+
+    # Condition
+    if [[ "$HOME" == "/home/fcretin" ]]; then
+        load_project_export
+        load_formation_extern_export
+        load_blueprint_export
+
     fi
 
 ```
