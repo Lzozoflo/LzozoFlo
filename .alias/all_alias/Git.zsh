@@ -47,27 +47,64 @@ find_dot_git() {
 }
 
 
+is_dirty() {
+    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
+    [[ -n $(git status --porcelain) ]]
+}
 
 
 ## git cmd push faster
 push() {
-    # Vérifier qu'un argument est fourni
-    if [[ -z "$1" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : aucun nom de commit fourni !${RESET}"
-        return 1
-    fi
+    if is_dirty; then
 
-    git add . || return 1
-    
-    git commit -m $1 || return 1
-    
-    sleep 0.5 || return 1
-    
-    git push || return 1
+        print_status info "Vous avez des modifications en cours (fichiers modifiés ou non suivis).\n"
+
+        print_status info "Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}" -n
+        read choice
+        echo ""
+
+        case "$choice" in 
+            y|Y )
+
+                find_dot_git || return 1;
+
+                local choice=$1
+                # Vérifier qu'un argument est fourni
+                if [[ -z "$1" ]]; then
+                    print_status info "Effectue un git add/commit/push de : "
+
+                    git status -s
+
+                    print_status info "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
+                    read choice
+                fi
+
+                git add . || return 1
+                
+                git commit -m $choice || return 1
+                
+                sleep 0.5 || return 1
+                
+                git push || return 1
+
+                cd -  
+            ;;
+
+            n|N )
+                echo "${TXT_ROUGE}Annulation${RESET}" 
+                return 1 ;;
+            * ) 
+                echo "${TXT_ROUGE}Réponse invalide${RESET}"
+                return 1 ;;
+        esac
+    fi
 }
 
 
 pullbranch() {
+
+    push || return 1
+
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
 
@@ -107,43 +144,13 @@ mergebranch() {
 }
 
 
-is_dirty() {
-    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
-    [[ -n $(git status --porcelain) ]]
-}
 
 mymerge() {
 
-    find_dot_git || return 1;
-    
-
-
-
-    # Vérifications du status
     if is_dirty; then
-
-        print_status info "Vous avez des modifications en cours (fichiers modifiés ou non suivis)."
-
-        git status -s
-
-        print_status info "Veuillez commit vos changements avant de continuer...\n"
-
-        echo -n "${TXT_BLEU}Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}"
-        read choice
-
-        case "$choice" in 
-            y|Y ) print_status info "Effectue un git add/commit/push"
-                print_status success "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
-                read choice
-                push $choice || return 1;;
-            n|N ) echo "${TXT_ROUGE}Annulation${RESET}" 
-                return 1 ;;
-            * ) echo "${TXT_ROUGE}Réponse invalide${RESET}"
-                return 1 ;;
-        esac
+         push || return 1
     fi
 
-    cd -
     
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
