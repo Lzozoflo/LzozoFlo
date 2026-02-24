@@ -2,11 +2,7 @@
 # 42
 export goinfre="$HOME/goinfre"
 alias son="/sgoinfre/scros/Public/utils/blue42"
-alias sonnb='systemctl --user start pulseaudio && systemctl --user enable pulseaudio'
 alias game="/sgoinfre/stdgames/launcher"
-
-
-
 
 
 

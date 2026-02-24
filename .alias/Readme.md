@@ -16,25 +16,37 @@
 ## .zshrc
 
 ```sh
-    # la vie
+
     alias als='code ~/.zshrc'
     alias sauce='source ~/.zshrc'
-    alias alss='code ~/.alias'
+
+
+    export spubfcretin="/sgoinfre/fcretin/public"
+    export sprivfcretin="/sgoinfre/fcretin/private"
+    export dlzozoflo="$spubfcretin/profile"
+    export ALIAS="$dlzozoflo/.alias/"
+    alias alss='code $ALIAS'
 
 
 
-    # Cherche et charge tous les .zsh dans ~/.alias et ses sous-dossiers
-    if [ -d "$HOME/.alias" ]; then
-        for file in $(find "$HOME/.alias" -name "*.zsh"); do
+    # Cherche et charge tous les .zsh dans $ALIAS et ses sous-dossiers
+    if [ -d "$ALIAS" ]; then
+        for file in $(find "$ALIAS" -name "*.zsh"); do
             source "$file"
         done
     fi
 
 
-    export ZSH="$HOME/.oh-my-zsh"
-    ZSH_THEME="af-magic"
-    plugins=(git)
-    source $ZSH/oh-my-zsh.sh
+    export sprivuser="/sgoinfre/$USER/private" #chmod 750
+    export spubuser="/sgoinfre/$USER/public" #chmod 755
+    export ALIAS_USER="$suser/.alias/"
+    alias alssu='code $ALIAS_USER'
+    # Cherche et charge tous les .zsh dans $ALIAS_USER et ses sous-dossiers
+    if [ -d "$ALIAS_USER" ]; then
+        for file in $(find "$ALIAS_USER" -name "*.zsh"); do
+            source "$file"
+        done
+    fi
 
 ```
 
