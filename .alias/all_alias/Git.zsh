@@ -47,15 +47,15 @@ is_dirty() {
 }
 
 _push(){
-
-    echo "oui"
-    git add . || return 1
-    
-    git commit -m $1 || return 1
-    
-    sleep 0.5 || return 1
-    
-    git push || return 1
+    find_dot_git            || return 1;
+    if [[ "$2" == "--no-status"  ]]; then
+        git status -s
+    fi
+    git add .               || {cd -;return 1;}
+    git commit -m $1        || {cd -;return 1;}
+    sleep 0.5               || {cd -;return 1;}
+    git push                || {cd -;return 1;}
+    cd -  
 }
 
 
@@ -63,7 +63,7 @@ _push(){
 push() {
 
     if [[ -n "$1" ]]; then
-        _push $1 || return $?
+        _push $1 "--no-status" || return $?
         return 0
     fi
 
@@ -78,7 +78,6 @@ push() {
         case "$choice" in 
             y|Y )
 
-                find_dot_git || return 1;
 
                 # Vérifier qu'un argument est fourni
                 print_status info "Effectue un git add/commit/push de : "
@@ -88,9 +87,8 @@ push() {
                 print_status info "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
                 read choice
 
-                _push() $choice
+                _push $choice
 
-                cd -  
             ;;
 
             n|N )
