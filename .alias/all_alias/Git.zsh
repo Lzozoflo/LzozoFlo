@@ -36,16 +36,14 @@ _push(){
     if ! _is_dirty; then
         return 0
     fi
+
     if [[ "$2" != "--no-status"  ]]; then
         
         print_status info "Vous etes sur de vouloir push tout ca ?: "
 
         git status -s
         print_status info "Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}" -n
-        
         local target=$(_ask) || {return 1}
-
-
     fi
     git add .               || {cd -;return 1;}
     git commit -m $1        || {cd -;return 1;}
