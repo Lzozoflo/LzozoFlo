@@ -27,6 +27,28 @@ _get_git_root() {
     [ "$(pwd)" = "/" ] && return 1
     (cd .. && _get_git_root)
 }
+_is_dirty() {
+    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
+    [[ -n $(git status --porcelain) ]]
+}
+_push(){
+    if [[ "$2" != "--no-status"  ]]; then
+        
+        print_status info "Vous etes sur de vouloir push tout ca ?: "
+
+        git status -s
+        print_status info "Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}" -n
+        
+        local target=$(_ask) || {return 1}
+
+
+    fi
+    git add .               || {cd -;return 1;}
+    git commit -m $1        || {cd -;return 1;}
+    sleep 0.5               || {cd -;return 1;}
+    git push                || {cd -;return 1;}
+}
+
 
 # Fonction principale à appeler
 find_dot_git() {
@@ -41,33 +63,17 @@ find_dot_git() {
     fi
 }
 
-is_dirty() {
-    # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
-    [[ -n $(git status --porcelain) ]]
-}
-
-_push(){
-    find_dot_git            || return 1;
-    if [[ "$2" == "--no-status"  ]]; then
-        git status -s
-    fi
-    git add .               || {cd -;return 1;}
-    git commit -m $1        || {cd -;return 1;}
-    sleep 0.5               || {cd -;return 1;}
-    git push                || {cd -;return 1;}
-    cd -  
-}
 
 
 ## git cmd push faster
 push() {
 
     if [[ -n "$1" ]]; then
-        _push $1 "--no-status" || return $?
+        _push $1 || return $?
         return 0
     fi
 
-    if is_dirty; then
+    if _is_dirty; then
 
         print_status info "Vous avez des modifications en cours (fichiers modifiés ou non suivis).\n"
 
@@ -87,7 +93,7 @@ push() {
                 print_status info "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
                 read choice
 
-                _push $choice
+                _push $choice "--no-status"
 
             ;;
 
@@ -144,7 +150,7 @@ mergebranch() {
 
 mymerge() {
 
-    if is_dirty; then
+    if _is_dirty; then
          push || return 1
     fi
 

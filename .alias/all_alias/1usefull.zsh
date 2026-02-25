@@ -146,3 +146,20 @@ correc_here() {
     # Aller dans le clone
     cd $HOME/goinfre/$1
 }
+
+
+_ask(){
+    echo ""
+    read choice
+    case "$choice" in 
+        y|Y ) 
+            echo $choice 
+            return 0;;
+        n|N )
+            echo "${TXT_ROUGE}Annulation...${RESET}" 
+            return 1 ;;
+        * ) 
+            echo "${TXT_ROUGE}Réponse invalide...${RESET}"
+            return 1 ;;
+    esac
+}
