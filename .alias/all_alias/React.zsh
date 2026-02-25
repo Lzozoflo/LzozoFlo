@@ -46,23 +46,30 @@ alias run="npm install && npm run dev"
 alias build="npm run build"
 
 headerscss(){
-echo '// @use "STYLE/variable" as var;'
-echo '//    var.$border_value;\n'
-echo '// @use "STYLE/_mixin" as mix;'
-echo '//    @include mix.full;\n'
+        echo '// @use "STYLE/variable" as var;'
+        echo '//    var.$border_value;\n'
+        echo '// @use "STYLE/_mixin" as mix;'
+        echo '//    @include mix.full;\n'
+    if [[ -n "$1" ]]; then
+        echo ".$1-root{\n\n}"
+    fi
 }
 
 headerjsx(){
-    echo "/* extern */
-import { useEffect, useState } from "react";
+    echo "/* extern */"
+    echo "import { useEffect, useState } from \"react\";"
+    echo ""
+    echo "/* back */"
+    echo "import checkCo from \"BACK/fct1.js\""
+    echo ""
+    echo "/* Css */"
 
-/* back */
-import checkCo from "BACK/fct1.js"
+    if [[ -n "$1" ]]; then
+    echo "import \"./$1.scss\";"
+    fi
 
-/* Css */
-import \"./$1.scss\";
-
-/* Components */"
+    echo ""
+    echo "/* Components */"
 }
 
 createjsx(){
@@ -80,16 +87,16 @@ createjsx(){
 
     mkdir $1
     
-    touch $1/$1.scss
+    headerscss $1 > $1/$1.scss
     
-    headerjsx > $1/$1.jsx
+    headerjsx $1 > $1/$1.jsx
 
     echo "
 
     
 export default function $1() {
     return (
-        <div className={\`$1\`}>
+        <div className={\`$1-root\`}>
         yo c'est david la farge
         </div>
     )

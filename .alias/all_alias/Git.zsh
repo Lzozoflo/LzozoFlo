@@ -18,11 +18,6 @@ alias psuh="p"
 alias mergedev='mymerge "dev/frontend-hot-reload"'
 alias pulldev='pullbranch "dev/frontend-hot-reload"'
 
-
-
-
-
-
 # Fonction interne pour trouver le chemin sans déplacer le parent
 _get_git_root() {
     if [ -d ".git" ]; then
@@ -46,15 +41,32 @@ find_dot_git() {
     fi
 }
 
-
 is_dirty() {
     # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
     [[ -n $(git status --porcelain) ]]
 }
 
+_push(){
+
+    echo "oui"
+    git add . || return 1
+    
+    git commit -m $1 || return 1
+    
+    sleep 0.5 || return 1
+    
+    git push || return 1
+}
+
 
 ## git cmd push faster
 push() {
+
+    if [[ -n "$1" ]]; then
+        _push $1 || return $?
+        return 0
+    fi
+
     if is_dirty; then
 
         print_status info "Vous avez des modifications en cours (fichiers modifiés ou non suivis).\n"
@@ -68,24 +80,15 @@ push() {
 
                 find_dot_git || return 1;
 
-                local choice=$1
                 # Vérifier qu'un argument est fourni
-                if [[ -z "$1" ]]; then
-                    print_status info "Effectue un git add/commit/push de : "
+                print_status info "Effectue un git add/commit/push de : "
 
-                    git status -s
+                git status -s
 
-                    print_status info "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
-                    read choice
-                fi
+                print_status info "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
+                read choice
 
-                git add . || return 1
-                
-                git commit -m $choice || return 1
-                
-                sleep 0.5 || return 1
-                
-                git push || return 1
+                _push() $choice
 
                 cd -  
             ;;
@@ -99,7 +102,6 @@ push() {
         esac
     fi
 }
-
 
 pullbranch() {
 
@@ -122,7 +124,6 @@ pullbranch() {
     print_status success "la branch '$branch_actuel' a bien été update avec la branch '$branch_a_update' !"
 }
 
-
 mergebranch() {
 
     pullbranch $1 || return $?
@@ -143,18 +144,14 @@ mergebranch() {
     print_status success "Pull et merge fini !"
 }
 
-
-
 mymerge() {
 
     if is_dirty; then
          push || return 1
     fi
 
-    
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
-    
 
     if [ -z "$branch_a_update" ] || ! git show-ref --verify --quiet "refs/heads/$branch_a_update"; then
         print_status error "La branche '$branch_a_update' est invalide ou absente."
