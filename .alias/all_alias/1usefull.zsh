@@ -149,11 +149,14 @@ correc_here() {
 
 
 _ask(){
+
+    # local target
+    # target=$(_ask) || return 1
     echo ""
     read choice
     case "$choice" in 
         y|Y ) 
-            echo $choice 
+            echo $choice
             return 0;;
         n|N )
             echo "${TXT_ROUGE}Annulation...${RESET}" 
