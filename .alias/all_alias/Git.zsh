@@ -43,7 +43,7 @@ _push(){
 
         git status -s
         print_status info "Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}" -n
-        local target=$(_ask) || {return 1}
+        local target=$(_ask) || return 1
     fi
     git add .               || {cd -;return 1;}
     git commit -m $1        || {cd -;return 1;}

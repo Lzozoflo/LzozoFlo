@@ -157,7 +157,7 @@ _ask(){
             return 0;;
         n|N )
             echo "${TXT_ROUGE}Annulation...${RESET}" 
-            return 1 ;;
+            return 1;;
         * ) 
             echo "${TXT_ROUGE}Réponse invalide...${RESET}"
             return 1 ;;
