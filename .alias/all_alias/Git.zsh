@@ -32,6 +32,10 @@ _is_dirty() {
     [[ -n $(git status --porcelain) ]]
 }
 _push(){
+
+    if ! _is_dirty; then
+        return 0
+    fi
     if [[ "$2" != "--no-status"  ]]; then
         
         print_status info "Vous etes sur de vouloir push tout ca ?: "
