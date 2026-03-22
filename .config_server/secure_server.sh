@@ -62,4 +62,4 @@ echo "N'oublie pas de tester : ssh -p 2424 user@serveur"
 # PasswordAuthentication yes to force only 
 # sudo nano /etc/ssh/sshd_config
 
-# sudo systemctl restart ssh
+# sudo systemctl restart ssh test
