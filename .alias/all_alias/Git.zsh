@@ -197,9 +197,14 @@ mymerge() {
 
 
 
+git_config(){
+    git config --global user.email "florent.cretin@hotmail.fr"
+    git config --global user.name "Lzozoflo"
+}
+
 ## init better
 gitinit() {
-
+    git_config
     # Vérifier qu'un argument est fourni
     if [[ -z "$1" ]]; then
         echo "Erreur : gitinit <--help> / <-h>"
