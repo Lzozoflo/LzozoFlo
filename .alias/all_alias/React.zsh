@@ -40,13 +40,49 @@ scss_transcendence_change() {
     echo -e "${GRAS}${TXT_ROUGE}\$$1:${RESET} $2;"
 }
 
+    
+alias logtrans="make -s -C $dtranscendence/.. logs"
+alias logtransp="make -s -C $dtranscendence/.. logsparam"
+alias logttrans="make -s -C $dtranscendence/.. logst"
+alias _logtrans="make -s -C $dtranscendence/.. logs_alert_flo"
+logtrans_alert() {
+    print_status info "Lancement de logtrans_alert..."
+    local buffer=()
+    
+    while IFS= read -r line; do
+        # Nettoyage
+        line=$(echo "$line" | sed 's/\r//g; s/\x1b\[[0-9;]*m//g')
+        
+        buffer+=("$line")
 
+        # Gestion du buffer (max 3)
+        if [ "${#buffer[@]}" -gt 3 ]; then
+            # Version compatible Bash/Zsh pour retirer le premier élément
+            buffer=("${buffer[@]:1}")
+        fi
+
+        # Debug simple et compatible
+        # echo "--- BUFFER (${#buffer[@]} lignes) ---"
+        # printf " > %s\n" "${buffer[@]}"
+
+        # Vérification
+        if [ "${#buffer[@]}" -eq 3 ]; then
+            if [[ "${buffer[1]}" == *"[0] WebSocket server initialized on path /ws"* ]] && \
+               [[ "${buffer[2]}" == *"[0] Server running on http://localhost:9000"* ]] && \
+               [[ "${buffer[3]}" == *"[0] Proxying front to Vite at http://localhost:5173"* ]]; then
+                
+                notify-send "Back-end ready.."
+                paplay "$spubfcretin/.regarde_pas_stp/fah.wav" >/dev/null 2>&1 &!
+            fi
+        fi
+    done < <(_logtrans 2>&1)
+}
 
 alias run="npm install && npm run dev"
 alias build="npm run build"
 
 headerscss(){
-        echo '// @use "STYLE/variable" as var;'
+        echo '// @use "STYLE/variable" as *;'
         echo '//    var.$border_value;\n'
         echo '// @use "STYLE/_mixin" as mix;'
         echo '//    @include mix.full;\n'
@@ -71,6 +107,7 @@ headerjsx(){
     echo ""
     echo "/* Components */"
 }
+
 
 createjsx(){
 

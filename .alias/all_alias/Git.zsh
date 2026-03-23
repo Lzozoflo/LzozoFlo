@@ -19,14 +19,29 @@ alias mergedev='mymerge "dev/frontend-hot-reload"'
 alias pulldev='pullbranch "dev/frontend-hot-reload"'
 
 # Fonction interne pour trouver le chemin sans déplacer le parent
-_get_git_root() {
-    if [ -d ".git" ]; then
+_get_frist_of() {    
+    if [ -e "$1" ]; then
         pwd
         return 0
     fi
     [ "$(pwd)" = "/" ] && return 1
-    (cd .. && _get_git_root)
+    (cd .. && _get_frist_of $1)
 }
+
+# Fonction principale à appeler
+find_frist_of() {
+
+    local target
+    target=$(_get_frist_of $1)
+
+    if [ $? -eq 0 ]; then
+        cd "$target"
+    else
+        echo -e "${TXT_ROUGE}Aucun $1 trouvé.${RESET}"
+        return 1
+    fi
+}
+
 _is_dirty() {
     # Si la sortie est vide, le repo est propre. Sinon, il y a des changements.
     [[ -n $(git status --porcelain) ]]
@@ -38,35 +53,29 @@ _push(){
         return 0
     fi
 
+    find_frist_of .git || return 1
+
     if [[ "$2" != "--no-status"  ]]; then
         
         print_status info "Vous etes sur de vouloir push tout ca ?: "
-
         git status -s
         print_status info "Voulez vous utiliser push qui [add/commit/push] (y/n) : ${RESET}" -n
 
         _ask || return 1
     fi
 
-    git add .               || return 1
-    git commit -m $target   || return 1 
-    sleep 0.5               || return 1
-    git push                || return 1
+    git add .               || {cd $OLDPWD; return 1;}
+    git commit -m $target   || {cd $OLDPWD; return 1;} 
+    sleep 0.5               || {cd $OLDPWD; return 1;}
+    git push                || {cd $OLDPWD; return 1;}
+    cd $OLDPWD
+    
+    local branch_actuel=$(git branch --show-current)
+    print_status success "push on ${branch_actuel} \!\n"
 }
 
 
-# Fonction principale à appeler
-find_dot_git() {
-    local target
-    target=$(_get_git_root)
 
-    if [ $? -eq 0 ]; then
-        cd "$target"
-    else
-        echo -e "${TXT_ROUGE}Aucun dépôt .git trouvé.${RESET}"
-        return 1
-    fi
-}
 
 
 
@@ -88,12 +97,14 @@ push() {
 
         case "$choice" in 
             y|Y )
-
-
                 # Vérifier qu'un argument est fourni
                 print_status info "Effectue un git add/commit/push de : "
 
+                find_frist_of .git || return 1
+
                 git status -s
+
+                cd $OLDPWD
 
                 print_status info "\tEntrer votre commit sans les ${TXT_ROUGE}''${RESET} : " -n
                 read choice
@@ -114,7 +125,10 @@ push() {
 
 pullbranch() {
 
-    push || return 1
+    if _is_dirty; then
+         push || return 1
+         echo ""
+    fi
 
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
@@ -122,25 +136,23 @@ pullbranch() {
     sleep 0.1
 
     # Utilisation de 'set -e' pour stopper si une commande échoue (ex: conflit)
-    print_status info "Update $branch_a_update..."
-    git switch "$branch_a_update" && git pull || { print_status error "[pullbranch(1)] ta eu un problème bon chance poto" ; return 1}
+    print_status info "Pull/Merge $branch_a_update vers $branch_actuel..."
+    git pull origin "$branch_a_update" && git push || { print_status error "[pullbranch(1)] ta eu un problème bon chance poto" ; return 1}
 
     sleep 0.1
 
-    print_status info "Merge $branch_a_update dans $branch_actuel..."
-    git switch "$branch_actuel" && git merge "$branch_a_update" && git push || { print_status error "[pullbranch(2)] ta eu un problème bon chance poto";print_status info "ta juste quelque conflict fait moi ca sur vscode et recommence"; return 2}
-
-    print_status success "la branch '$branch_actuel' a bien été update avec la branch '$branch_a_update' !"
+    print_status success "Pull and Merge de '$branch_a_update' vers '$branch_actuel' fini !"
 }
 
 mergebranch() {
 
-    pullbranch $1 || return $?
+    pullbranch $1  || return $?
     
     local branch_actuel=$(git branch --show-current)
     local branch_a_update=$1
 
-    print_status info "Merge $branch_actuel dans $branch_a_update..."
+    echo ""
+    print_status info "Merge $branch_actuel vers $branch_a_update..."
     git switch "$branch_a_update" && git merge "$branch_actuel" && git push || { print_status error "[mergebranch(1)] ta eu un problème bon chance poto" ; return 3}
 
     sleep 0.1
@@ -150,7 +162,7 @@ mergebranch() {
 
     sleep 0.1
 
-    print_status success "Pull et merge fini !"
+    print_status success "Merge de $branch_actuel vers $branch_a_update fini !"
 }
 
 mymerge() {
@@ -197,6 +209,41 @@ mymerge() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Readme
+load_blueprint_export() {
+    export blueprint="$dmarkdown/Blueprint/*"
+    alias addreadme="cp $blueprint . -r"
+}
+
+
+creatgitignore(){
+    echo '.env'             >> .gitignore
+    echo '*node_modules*'   >> .gitignore
+    echo '*secret*'         >> .gitignore
+    echo ''                 >> .gitignore
+    echo '*error*'          >> .gitignore
+    echo '*flo*'            >> .gitignore
+    echo '*test*'           >> .gitignore
+}
+
 ## init better
 gitinit() {
 
@@ -213,9 +260,16 @@ gitinit() {
         return 1
     fi
     
+    addreadme
+
+    creatgitignore
+
+    mv BluePrintReadMeMain.md ReadMe.md
+
+
     git init
 
-    git add Readme.md
+    git add ./Project ReadMe.md .gitignore
 
     git commit -m "first commit"
 

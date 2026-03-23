@@ -47,9 +47,9 @@ load_project_export(){
     export dformation_extern="$HOME/project/formation_extern"
 # ├── ft_shmup
 # ├── ft_transcendence
-    export dtranscendence="$dproject/ft_transcendence"
-        export dback="$dtranscendence/web/back/src"
-        export dfront="$dtranscendence/web/front"
+    export dtranscendence="$dproject/ft_transcendence/web"
+        export dback="$dtranscendence/back/src"
+        export dfront="$dtranscendence/front"
         export dpage="$dfront/src/page"
         export dstyle="$dfront/src/style"
         export fborder="$dfront/src/style/global/border.scss"
@@ -78,6 +78,7 @@ load_project_export(){
 # ├── HTML_CSS
 # ├── JavaScript
 # ├── Markdown
+# ├── Portfolio
 # ├── React
 # ├── regex
 # └── TypeScript
@@ -106,6 +107,8 @@ load_formation_extern_export(){
     export djavescript="$dformation_extern/JavaScript"
 # ├── Markdown
     export dmarkdown="$dformation_extern/Markdown"
+# ├── Portfolio
+    export dpro="$dformation_extern/Portfolio"
 # ├── React
     export dreact="$dformation_extern/React"
 # ├── regex

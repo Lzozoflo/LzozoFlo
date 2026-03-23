@@ -1,11 +1,6 @@
 
-# Makefile alias
 alias c='clear'
 alias m='make'
-alias cm='c; m'
-alias mc='m clean'
-alias mf='m fclean'
-alias mr='m re'
 
 # Valgrind alias (valgrind --leak-check=full --show-leak-kinds=all --show-mismatched-frees=yes --track-fds=yes --trace-children=yes)
 export vgcool="--leak-check=full --show-leak-kinds=all"
@@ -16,12 +11,6 @@ alias mvcool='m && vcool'
 alias mvfull='m && vfull'
 
 
-# Readme
-load_blueprint_export() {
-    export blueprint="$d_markdown/Blueprint/BluePrintReadMeMain.md"
-    alias addreadme="cp $blueprint Readme.md -r"
-    alias codereadme="code $blueprint"
-}
 
 
 
@@ -148,15 +137,19 @@ correc_here() {
 }
 
 
-_ask(){
-
+_ask_choice(){
     # local target
     # target=$(_ask) || return 1
     echo ""
     read choice
+    echo $choice
+}
+
+_ask(){
+    echo $1 -n
+    read choice
     case "$choice" in 
         y|Y ) 
-            echo $choice
             return 0;;
         n|N )
             echo "${TXT_ROUGE}Annulation...${RESET}" 
@@ -165,4 +158,39 @@ _ask(){
             echo "${TXT_ROUGE}Réponse invalide...${RESET}"
             return 1 ;;
     esac
+}
+
+
+alias re="maketraget re"
+alias fclean="maketraget fclean"
+alias fclear="fclean"
+
+alias dev="maketraget dev"
+alias prod="maketraget prod"
+alias studio="maketraget studio"
+alias modeldb="maketraget modeldb"
+
+maketraget() {
+    local target
+    target=$(_get_frist_of Makefile)
+
+    if [ $? -eq 0 ]; then
+        make -s -C $target $1
+    else
+        return 1
+    fi
+}
+
+
+treecat() {
+  local target="${1:-.}"
+
+  # -I permet d'exclure des patterns spécifiques séparés par |
+
+  tree $target --gitignore -if -I "node_modules|package-lock.json|.git|idee_de_jeu.jpg" -a | while read -r file; do
+    if [ -f "$file" ]; then
+      printf "\n\n--- FILE: %s ---\n" "$file" >> out
+      cat "$file" >> out
+    fi
+  done
 }
