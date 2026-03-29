@@ -1,196 +1,106 @@
 
 alias c='clear'
-alias m='make'
 
 # Valgrind alias (valgrind --leak-check=full --show-leak-kinds=all --show-mismatched-frees=yes --track-fds=yes --trace-children=yes)
 export vgcool="--leak-check=full --show-leak-kinds=all"
 export vgfull="$vgcool --track-origins=yes --show-mismatched-frees=yes --track-fds=yes --trace-children=yes"
 alias vcool='valgrind $vgcool'
 alias vfull='valgrind $vgfull'
-alias mvcool='m && vcool'
-alias mvfull='m && vfull'
 
 
+alias m='make'
+alias mvcool='make && vcool'
+alias mvfull='make && vfull'
 
 
+maketarget() {
+    local target
+    if target=$(_get_first_of Makefile); then   # ← teste directement, pas $? après
+        make -s -C "$target" "$1"
+    else
+        return 1
+    fi
+}
 
+# Mise à jour de tous les alias qui l'appellent
+alias re="maketarget re"
+alias fclean="maketarget fclean"
+alias fclear="fclean"
+
+alias dev="maketarget dev"
+alias prod="maketarget prod"
+alias studio="maketarget studio"
+alias modeldb="maketarget modeldb"
+
+treecat() {
+    local target="${1:-.}"
+    local output="${2:-out}"
+
+
+    tree $target --gitignore -if -a \
+        -I "node_modules|package-lock.json|.git|idee_de_jeu.jpg" | while read -r file; do
+            if [ -f "$file" ]; then
+            printf "\n\n--- FILE: %s ---\n" "$file" >> "$output"
+            cat "$file" >> "$output"
+        fi
+    done
+
+    print_status success "Résultat écrit dans '$output'."
+}
 
 place() {
+    case "$1" in
+        --help|-h)
+            echo "Usage:"
+            echo "  place [dossier]       — espace disque + du du dossier"
+            return 0
+            ;;
+    esac
 
-    # Help
-    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-        echo "Usage:"
-        echo "  place dossier"
-        echo "  place -rm dossier"
-        echo "  place -rmfr dossier"
-        return 0
-    fi
-
-    # rm interactif (dossier)
-    if [[ "$1" == "-rm" ]]; then
-        if [[ -z "$2" ]]; then
-            echo "Specify a path."
-            return 1
-        fi
-        rm -ri "$HOME/$2"
-        return $?
-    fi
-   
-
-    # affichage espace disque
     df -h "$HOME" | tail -n 1
-
     echo ""
-
-    # rm interactif (dossier)
     du -h "$HOME/$1" --max-depth=1 2>/dev/null | sort -hr | head -n 15
 }
 
 
 
+# ─── Utilitaires internes ─────────────────────────────────────────────────────
 
-
-
-
-# ${TXT_}
-# ${RESET}
-
-
-
-addheader_infilef(){
-    # Vérifier qu'un argument
-    if [[ -z "$1" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : Rien a ajouter !${RESET}"
-        return 1
-    fi
-
-    # Vérifier qu'un argument est fourni
-    if [[ -z "$2" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : aucun nom de fichier fourni !${RESET}"
-        return 1
-    fi
-
-    $1 $2 > "$2.tmp"
-
-    cat "$2" | >> "$2.tmp"
-
-    mv "$2.tmp" "$2"
+# Demande y/n — retourne 0 si "y", 1 sinon
+_ask() {
+    local reply
+    read -r reply       # -r : ne pas interpréter les backslashes
+    [[ "${reply:l}" == "y" ]]
 }
 
-addheader_infile(){
-    # Vérifier qu'un argument
-    if [[ -z "$1" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : Rien a ajouter !${RESET}"
-        return 1
+# Cherche récursivement vers / le premier dossier contenant $1
+# Affiche le chemin trouvé sur stdout, sans changer le répertoire courant
+_get_first_of() {
+    if [ -e "$1" ]; then
+        pwd
+        return 0
     fi
-
-    # Vérifier qu'un argument est fourni
-    if [[ -z "$2" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : aucun nom de fichier fourni !${RESET}"
-        return 1
-    fi
-
-    echo $1 > "$2.tmp"
-
-    cat "$2" | >> "$2.tmp"
-
-    mv "$2.tmp" "$2"
+    [ "$(pwd)" = "/" ] && return 1
+    (cd .. && _get_first_of "$1")
 }
 
-
-# help
-correc_here() {
-
-    # Vérifier qu'un argument est fourni
-    if [[ -z "$1" ]]; then
-        echo "Erreur : aucun nom de dossier fourni !"
-        return 1
-    fi
-
-    # Vérifier si le dossier existe déjà
-    if [[ -e "$HOME/goinfre/$1" ]]; then
-        echo "Erreur : '$1' existe déjà !"
-        return 1
-    fi
-
-    # Récupérer l'URL du remote vog
-    if [[ -z "$2" ]]; then
-        url=$(git remote get-url vog 2>/dev/null)
-    else
-        url=$(git remote get-url $2 2>/dev/null)
-    fi
-
-    # Vérifier que l'URL existe
-    if [[ -z "$url" ]]; then
-        echo "Remote introuvable !"
-        return 1
-    fi
-
-    # Aller dans le bon dossier
-    cd $HOME/goinfre
-
-    # Cloner dans le dossier donné en argument
-    git clone "$url" "$1"
-
-    # Aller dans le clone
-    cd $HOME/goinfre/$1
-}
-
-
-_ask_choice(){
-    # local target
-    # target=$(_ask) || return 1
-    echo ""
-    read choice
-    echo $choice
-}
-
-_ask(){
-    echo $1 -n
-    read choice
-    case "$choice" in 
-        y|Y ) 
-            return 0;;
-        n|N )
-            echo "${TXT_ROUGE}Annulation...${RESET}" 
-            return 1;;
-        * ) 
-            echo "${TXT_ROUGE}Réponse invalide...${RESET}"
-            return 1 ;;
-    esac
-}
-
-
-alias re="maketraget re"
-alias fclean="maketraget fclean"
-alias fclear="fclean"
-
-alias dev="maketraget dev"
-alias prod="maketraget prod"
-alias studio="maketraget studio"
-alias modeldb="maketraget modeldb"
-
-maketraget() {
+# Change de répertoire vers le premier ancêtre contenant $1
+find_first_of() {
     local target
-    target=$(_get_frist_of Makefile)
+    target=$(_get_first_of "$1")
 
     if [ $? -eq 0 ]; then
-        make -s -C $target $1
+        cd "$target" || return 1
     else
+        print_status error "Aucun '$1' trouvé."
         return 1
     fi
 }
 
+# ─── Readme / Blueprint ───────────────────────────────────────────────────────
 
-treecat() {
-  local target="${1:-.}"
-
-  # -I permet d'exclure des patterns spécifiques séparés par |
-
-  tree $target --gitignore -if -I "node_modules|package-lock.json|.git|idee_de_jeu.jpg" -a | while read -r file; do
-    if [ -f "$file" ]; then
-      printf "\n\n--- FILE: %s ---\n" "$file" >> out
-      cat "$file" >> out
-    fi
-  done
+load_blueprint_export() {
+    export blueprint="$dmarkdown/Blueprint/*"
+    alias addreadme="cp $blueprint . -r"
 }
+

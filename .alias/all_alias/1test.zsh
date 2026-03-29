@@ -1,9 +1,3 @@
-
-    # if [[ -n "$1" ]]; then est present
-
-    # if [[ -z "$1" ]]; then n'est pas present
-
-
 _params_present(){
     if [[ -n "$1" ]]; then
         return 0
@@ -23,8 +17,4 @@ _params_not_equal(){
         return 0
     fi
     return 1
-}
-
-alert(){
-    echo $1 | at $1 
 }
