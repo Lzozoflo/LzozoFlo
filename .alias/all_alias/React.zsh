@@ -1,50 +1,54 @@
 ############################################################
 
 
-
-
-
-
-
 scss_transcendence_add() {
-
     if [[ -z "$1" ]]; then
-        echo -e "${TXT_ROUGE}[Erreur]: aucun nom de variable !${RESET}"
-        echo -e "${TXT_JAUNE}[Info]: voila tout les variable a changer... ${RESET}"
-        cat $dstyle/_variable.scss
+        print_status error "Aucun nom de variable fourni."
+        print_status info "Variables actuelles :"
+        cat "$dstyle/_variable.scss"
         return 1
     fi
     if [[ -z "$2" ]]; then
-        echo -e "${TXT_ROUGE}[Erreur]: aucune valeur pour $1: ?;${RESET}"
+        print_status error "Aucune valeur pour '\$$1'."
         return 1
     fi
-    grep -q "\$$1:" "$dstyle/_variable.scss" && { echo -e "${TXT_ROUGE}Erreur: Le Noms de cette Variable est deja utiliser !${RESET}\n${TXT_JAUNE}[Info] Utiliser plutot [scss_transcendence_change]${RESET}"; grep "\$$1:" "$dstyle/_variable.scss"; return 1; }
-    echo "\$$1: $2;" >> $dstyle/_variable.scss
+    if grep -q "\$$1:" "$dstyle/_variable.scss"; then
+        print_status error "'\$$1' existe déjà — utilise scss_transcendence_change."
+        grep "\$$1:" "$dstyle/_variable.scss"
+        return 1
+    fi
+    echo "\$$1: $2;" >> "$dstyle/_variable.scss"
+    print_status success "Variable '\$$1: $2;' ajoutée."
 }
+
 
 scss_transcendence_change() {
-
     if [[ -z "$1" ]]; then
-        echo -e "${TXT_ROUGE}[Erreur]: aucun nom de variable !${RESET}"
-        echo -e "${TXT_JAUNE}[Info]: voila tout les variable a changer... ${RESET}"
-        cat $dstyle/_variable.scss
+        print_status error "Aucun nom de variable fourni."
+        print_status info "Variables actuelles :"
+        cat "$dstyle/_variable.scss"
         return 1
     fi
     if [[ -z "$2" ]]; then
-        echo -e "${TXT_ROUGE}[Erreur]: aucune valeur pour $1: ?;${RESET}"
+        print_status error "Aucune valeur pour '\$$1'."
         return 1
     fi
 
-    grep -q "\$$1:" "$dstyle/_variable.scss" && grep "\$$1:" "$dstyle/_variable.scss" || { echo -e "${TXT_ROUGE}Erreur: Aucune Variable du nom de $1${RESET}"; return 1; }
+    if ! grep -q "\$$1:" "$dstyle/_variable.scss"; then
+        print_status error "Variable '\$$1' introuvable."
+        return 1
+    fi
+
     sed -i "s/\$$1: .*/\$$1: $2;/" "$dstyle/_variable.scss"
-    echo -e "${GRAS}${TXT_ROUGE}\$$1:${RESET} $2;"
+    print_status success "\$$1: $2;"
 }
 
-    
+
 alias logtrans="make -s -C $dtranscendence/.. logs"
 alias logtransp="make -s -C $dtranscendence/.. logsparam"
 alias logttrans="make -s -C $dtranscendence/.. logst"
 alias _logtrans="make -s -C $dtranscendence/.. logs_alert_flo"
+
 logtrans_alert() {
     print_status info "Lancement de logtrans_alert..."
     local buffer=()
@@ -57,7 +61,6 @@ logtrans_alert() {
 
         # Gestion du buffer (max 3)
         if [ "${#buffer[@]}" -gt 3 ]; then
-            # Version compatible Bash/Zsh pour retirer le premier élément
             buffer=("${buffer[@]:1}")
         fi
 
@@ -78,8 +81,25 @@ logtrans_alert() {
     done < <(_logtrans 2>&1)
 }
 
+<<<<<<< HEAD
 alias run="npm install && npm run dev"
 alias build="npm run build"
+=======
+createtsx() {
+    if [[ -z "$1" ]]; then
+        print_status error "Aucun nom de composant fourni."
+        return 1
+    fi
+    if [[ -e "$PWD/$1" ]]; then
+        print_status error "Le dossier '$1' existe déjà."
+        return 1
+    fi
+
+    mkdir -p "$1"
+    touch "$1/$1.scss" "$1/$1.tsx"
+    print_status success "Composant '$1' créé."
+}
+>>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a
 
 
 initreact() {
@@ -92,11 +112,12 @@ initreact() {
         return 1
     fi
 
-    cp -r $d_react/base $d_react/exo/$1
+    cp -r $dreact/base $dreact/exo/$1
 
-    echo "# $1" > $d_react/exo/$1/Readme.md
+    echo "# $1" > $dreact/exo/$1/Readme.md
 
-    cd $d_react/exo/$1
+    cd $dreact/exo/$1
 
     npm install
 }
+

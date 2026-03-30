@@ -13,10 +13,11 @@
 # All my shell alias
 
 
-## .zshrc
+## ~/.zshrc
 
 ```sh
 
+    alias nals='nano ~/.zshrc'
     alias als='code ~/.zshrc'
     alias sauce='source ~/.zshrc'
 
@@ -28,15 +29,20 @@
     alias alss='code $ALIAS'
 
 
-
     # Cherche et charge tous les .zsh dans $ALIAS et ses sous-dossiers
     if [ -d "$ALIAS" ]; then
         for file in $(find "$ALIAS" -name "*.zsh"); do
             source "$file"
         done
     fi
+    
+    
+    if [[ "$HOME" == "/home/fcretin" ]]; then
+        42_path
+        load_blueprint_export
+    fi
 
-    # Condition
+
     if [[ "$USER" != "fcretin" ]]; then
         export sprivuser="/sgoinfre/$USER/private" #chmod 750
         export spubuser="/sgoinfre/$USER/public" #chmod 755
@@ -48,15 +54,6 @@
                 source "$file"
             done
         fi
-    fi
-
-
-    # Condition
-    if [[ "$HOME" == "/home/fcretin" ]]; then
-        load_project_export
-        load_formation_extern_export
-        load_blueprint_export
-
     fi
 
 ```
