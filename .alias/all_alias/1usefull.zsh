@@ -52,11 +52,6 @@ place() {
 
 
 
-# ${TXT_}
-# ${RESET}
-
-
-
 addheader_infilef(){
     # Vérifier qu'un argument
     if [[ -z "$1" ]]; then
@@ -187,10 +182,21 @@ treecat() {
 
   # -I permet d'exclure des patterns spécifiques séparés par |
 
-  tree $target --gitignore -if -I "node_modules|package-lock.json|.git|idee_de_jeu.jpg" -a | while read -r file; do
+  tree $target --gitignore -if -I "out|node_modules|package-lock.json|.git|Game|package-look.json" -a | while read -r file; do
     if [ -f "$file" ]; then
       printf "\n\n--- FILE: %s ---\n" "$file" >> out
       cat "$file" >> out
     fi
   done
 }
+
+# treecatstatus() {
+#   # Récupère uniquement les fichiers suivis (M, A, etc.) ou non suivis (??)
+#   # 'cut -c 4-' extrait le chemin du fichier après l'indicateur de statut Git
+#   git status --porcelain | cut -c 4- | while read -r file; do
+#     if [ -f "$file" ]; then
+#       printf "\n\n--- FILE: %s ---\n" "$file" >> out
+#       cat "$file" >> out
+#     fi
+#   done
+# }

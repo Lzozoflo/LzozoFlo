@@ -1,13 +1,8 @@
 {
-	// Place your snippets for typescriptreact here. Each snippet is defined under a snippet name and has a prefix, body and 
-	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
-	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
-	// same ids are connected.
-	// Example:
 	"Print to console": {
 		"prefix": "colog",
 		"body": [
-				"console.log(`$1`);$0",
+				"console.log(`$1`);$0"
 		],
 		"description": "Log output to console"
 	},
@@ -22,7 +17,7 @@
 			"",
 			"",
 			"/* Css */",
-			"// import '$1.scss'",
+			"// import './$1.scss'",
 			"",
 			"/* Components */",
 			"",
@@ -38,29 +33,29 @@
 			"            <h1>Hello World</h1>$0",
 			"        </div>",
 			"    )",
-			"}",
-		],
+			"}"
+		]
 	},
 	"className": {
 		"prefix": "clas",
 		"body": [
-			"className={`$1`}$0",
+			"className={`$1`}$0"
 			],
 		"description": "petit norme pour toute les balise tsc pas de ='' mais des ={``}"
 	},
 	"useState": {
 		"prefix": "useState",
 		"body": [
-	    	"const [oui, setOui] = useState($0null);",
-		],
+	    	"const [oui, setOui] = useState<string>('$0');"
+		]
 	},
 	"useEffect": {
 		"prefix": "useEffect",
 		"body": [ 
 			"useEffect(() => {",
 			"$0",
-			"}, [])",
-		],
+			"}, [])"
+		]
 	},
 	"useFetch": {
 		"prefix": "useFetch",
@@ -80,7 +75,7 @@
             "        console.log('oui', repjson);",
         	"};",
 			"handleFetch();",
-			"",
-		],
-	},
+			""
+		]
+	}
 }
