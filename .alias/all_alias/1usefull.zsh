@@ -32,6 +32,21 @@ alias prod="maketarget prod"
 alias studio="maketarget studio"
 alias modeldb="maketarget modeldb"
 
+
+place() {
+    case "$1" in
+        --help|-h)
+            echo "Usage:"
+            echo "  place [dossier]       — espace disque + du du dossier"
+            return 0
+            ;;
+    esac
+
+    df -h "$HOME" | tail -n 1
+    echo ""
+    du -h "$HOME/$1" --max-depth=1 2>/dev/null | sort -hr | head -n 15
+}
+
 treecat() {
     local target="${1:-.}"
     local output="${2:-out}"
@@ -48,53 +63,25 @@ treecat() {
     print_status success "Résultat écrit dans '$output'."
 }
 
-place() {
-    case "$1" in
-        --help|-h)
-            echo "Usage:"
-            echo "  place [dossier]       — espace disque + du du dossier"
-            return 0
-            ;;
-    esac
-
-    df -h "$HOME" | tail -n 1
-    echo ""
-    du -h "$HOME/$1" --max-depth=1 2>/dev/null | sort -hr | head -n 15
-}
-
+# treecatstatus() {
+#   # Récupère uniquement les fichiers suivis (M, A, etc.) ou non suivis (??)
+#   # 'cut -c 4-' extrait le chemin du fichier après l'indicateur de statut Git
+#   git status --porcelain | cut -c 4- | while read -r file; do
+#     if [ -f "$file" ]; then
+#       printf "\n\n--- FILE: %s ---\n" "$file" >> out
+#       cat "$file" >> out
+#     fi
+#   done
+# }
 
 
 # ─── Utilitaires internes ─────────────────────────────────────────────────────
 
-<<<<<<< HEAD
-
-
-
-addheader_infilef(){
-    # Vérifier qu'un argument
-    if [[ -z "$1" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : Rien a ajouter !${RESET}"
-        return 1
-    fi
-
-    # Vérifier qu'un argument est fourni
-    if [[ -z "$2" ]]; then
-        echo "${TXT_ROUGE}[Erreur] : aucun nom de fichier fourni !${RESET}"
-        return 1
-    fi
-
-    $1 $2 > "$2.tmp"
-
-    cat "$2" | >> "$2.tmp"
-
-    mv "$2.tmp" "$2"
-=======
 # Demande y/n — retourne 0 si "y", 1 sinon
 _ask() {
     local reply
     read -r reply       # -r : ne pas interpréter les backslashes
     [[ "${reply:l}" == "y" ]]
->>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a
 }
 
 # Cherche récursivement vers / le premier dossier contenant $1
@@ -128,26 +115,3 @@ load_blueprint_export() {
     alias addreadme="cp $blueprint . -r"
 }
 
-<<<<<<< HEAD
-  # -I permet d'exclure des patterns spécifiques séparés par |
-
-  tree $target --gitignore -if -I "out|node_modules|package-lock.json|.git|Game|package-look.json" -a | while read -r file; do
-    if [ -f "$file" ]; then
-      printf "\n\n--- FILE: %s ---\n" "$file" >> out
-      cat "$file" >> out
-    fi
-  done
-}
-
-# treecatstatus() {
-#   # Récupère uniquement les fichiers suivis (M, A, etc.) ou non suivis (??)
-#   # 'cut -c 4-' extrait le chemin du fichier après l'indicateur de statut Git
-#   git status --porcelain | cut -c 4- | while read -r file; do
-#     if [ -f "$file" ]; then
-#       printf "\n\n--- FILE: %s ---\n" "$file" >> out
-#       cat "$file" >> out
-#     fi
-#   done
-# }
-=======
->>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a

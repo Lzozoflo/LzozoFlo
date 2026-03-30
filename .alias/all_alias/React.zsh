@@ -81,10 +81,6 @@ logtrans_alert() {
     done < <(_logtrans 2>&1)
 }
 
-<<<<<<< HEAD
-alias run="npm install && npm run dev"
-alias build="npm run build"
-=======
 createtsx() {
     if [[ -z "$1" ]]; then
         print_status error "Aucun nom de composant fourni."
@@ -99,7 +95,6 @@ createtsx() {
     touch "$1/$1.scss" "$1/$1.tsx"
     print_status success "Composant '$1' créé."
 }
->>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a
 
 
 initreact() {
