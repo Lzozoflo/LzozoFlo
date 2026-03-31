@@ -2,22 +2,18 @@
 	"Print to console": {
 		"prefix": "colog",
 		"body": [
-<<<<<<< HEAD
-				"console.log(`$1`);$0"
-=======
 			"console.log(`$1`);$0"
->>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a
 		],
 		"description": "Log output to console"
 	},
 	"addheader": {
 		"prefix": "headertsx",
 		"body": [
-			"/* extern */",
+			"/* Extern */",
 			"import { useEffect, useState } from \"react\";",
 			"",
 			"",
-			"/* back */",
+			"/* Back */",
 			"",
 			"",
 			"/* Css */",
@@ -25,7 +21,7 @@
 			"",
 			"/* Components */",
 			"",
-			"/* Interface */",
+			"/* Types */",
 			"//interface $1Props {",
 			"//    children: ReactNode;",
 			"//    className?: string;",
@@ -44,21 +40,13 @@
 		"prefix": "clas",
 		"body": [
 			"className={`$1`}$0"
-<<<<<<< HEAD
-			],
-=======
 		],
->>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a
 		"description": "petit norme pour toute les balise tsc pas de ='' mais des ={``}"
 	},
 	"useState": {
 		"prefix": "useState",
 		"body": [
-<<<<<<< HEAD
-	    	"const [oui, setOui] = useState<string>('$0');"
-=======
 	    	"const [oui, setOui] = useState($0null);"
->>>>>>> 745a94d677e5ce4c026f63da39692cd5c879009a
 		]
 	},
 	"useEffect": {
