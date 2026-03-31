@@ -165,6 +165,45 @@ mymerge() {
     mergebranch "$branch_a_update"
 }
 
+# ─── Git : push all repo define in GIT_PATH_42 ───────────────────────────
+
+check_all_git() {
+
+    # 1. On sépare la variable GIT_PATH_42 en utilisant le séparateur ':'
+    # (s) divise la chaîne en tableau
+    local paths=("${(@s/:/)GIT_PATH_42}")
+    local count=0
+
+    print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
+
+    for repo in $paths; do
+
+        # On vérifie si le dossier existe pour éviter les erreurs
+        if [[ -d "$repo" ]]; then
+        
+            # On se déplace dans le dossier (dans un subshell pour ne pas changer le dossier courant de l'utilisateur)
+            (
+                cd "$repo"
+                # On vérifie si c'est un dépôt Git
+                if [[ -d ".git" ]]; then
+                    # Utilisation de votre fonction interne _is_dirty
+                    if _is_dirty; then
+                        print_status info "Modifications détectées dans : $repo"
+                        # Appel de votre fonction push interactive
+                        push
+                        ((count++))
+                    fi
+                fi
+            )
+        fi
+    done
+
+    if [[ $count -eq 0 ]]; then
+        print_status success "Tous les dépôts sont propres."
+    else
+        print_status success "Vérification terminée ($count dépôts traités)."
+    fi
+}
 
 # ─── Git : config globale ─────────────────────────────────────────────────────
 
