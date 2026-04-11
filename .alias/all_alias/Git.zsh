@@ -198,11 +198,7 @@ _push_all_git() {
         fi
     done
 
-    if [[ $count -eq 0 ]]; then
-        print_status success "Tous les dépôts sont propres."
-    else
-        print_status success "Vérification terminée ($count dépôts traités)."
-    fi
+    print_status success "Vérification terminée ."
 }
 
 _pull_all_git() {
@@ -226,7 +222,6 @@ _pull_all_git() {
                 if [[ -d ".git" ]]; then
                     if ! _is_dirty; then
                         git pull
-                        ((count++))
                     else 
                         print_status info "Modifications détectées dans : $repo"
                     fi
@@ -235,11 +230,7 @@ _pull_all_git() {
         fi
     done
 
-    if [[ $count -eq 0 ]]; then
-        print_status success "Tous les dépôts sont propres."
-    else
-        print_status success "Vérification terminée ($count dépôts traités)."
-    fi
+    print_status success "Vérification terminée ."
 }
 
 
