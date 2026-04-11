@@ -42,7 +42,8 @@ path_maison(){
     export dproject="$HOME/project"                                     # project
         export dtranscendence="$dproject/ft_transcendence/web"          # ├── ft_transcendence
         export ddotfile="$dproject/LzozoFlo"                            # ├── LzozoFlo
-        export dpro="$dproject/Portfolio"                               # └── portfolio
+        export dportfolio="$dproject/portfolio"                         # └── portfolio
+            export dpro="$dportfolio/Portfolio"                         #     └── Portfolio
 
     export GIT_PATH_MAISON="$dproject:$dtranscendence:$ddotfile:$dpro"
 
