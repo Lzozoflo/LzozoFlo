@@ -2,7 +2,7 @@
 
 # ─── 42 ──────────────────────────────────────────────────────────────
 
-42_path(){
+path_42(){
 
     export dproject="$HOME/project"                                         # project
         export dcpp0="$dproject/CPP_00"                                     # ├── CPP_00
@@ -35,6 +35,15 @@
 }
 
 
-
 # ─── Maison ──────────────────────────────────────────────────────────────
 
+path_maison(){
+
+    export dproject="$HOME/project"                                     # project
+        export dtranscendence="$dproject/ft_transcendence/web"          # ├── ft_transcendence
+        export ddotfile="$dproject/LzozoFlo"                            # ├── LzozoFlo
+        export dpro="$dproject/Portfolio"                               # └── portfolio
+
+    export GIT_PATH_MAISON="$dproject:$dtranscendence:$ddotfile:$dpro"
+
+}

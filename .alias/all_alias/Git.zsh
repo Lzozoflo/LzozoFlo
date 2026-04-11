@@ -165,13 +165,13 @@ mymerge() {
     mergebranch "$branch_a_update"
 }
 
-# ─── Git : push all repo define in GIT_PATH_42 ───────────────────────────
+# ─── Git : push pull all repo define in GIT_PATH_42 ───────────────────────────
 
-check_all_git() {
+_push_all_git() {
 
     # 1. On sépare la variable GIT_PATH_42 en utilisant le séparateur ':'
     # (s) divise la chaîne en tableau
-    local paths=("${(@s/:/)GIT_PATH_42}")
+    local paths=("${(@s/:/)1}")
     local count=0
 
     print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
@@ -204,6 +204,52 @@ check_all_git() {
         print_status success "Vérification terminée ($count dépôts traités)."
     fi
 }
+
+_pull_all_git() {
+
+    # 1. On sépare la variable GIT_PATH_42 en utilisant le séparateur ':'
+    # (s) divise la chaîne en tableau
+    local paths=("${(@s/:/)1}")
+    local count=0
+
+    print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
+
+    for repo in $paths; do
+
+        # On vérifie si le dossier existe pour éviter les erreurs
+        if [[ -d "$repo" ]]; then
+        
+            # On se déplace dans le dossier (dans un subshell pour ne pas changer le dossier courant de l'utilisateur)
+            (
+                cd "$repo"
+                # On vérifie si c'est un dépôt Git
+                if [[ -d ".git" ]]; then
+                    if ! _is_dirty; then
+                        git pull
+                        ((count++))
+                    else 
+                        print_status info "Modifications détectées dans : $repo"
+                    fi
+                fi
+            )
+        fi
+    done
+
+    if [[ $count -eq 0 ]]; then
+        print_status success "Tous les dépôts sont propres."
+    else
+        print_status success "Vérification terminée ($count dépôts traités)."
+    fi
+}
+
+
+if [[ "$where" == "42" ]]; then
+    alias pull_all_git="_pull_all_git $GIT_PATH_42"
+    alias push_all_git="_push_all_git $GIT_PATH_42"
+else
+    alias pull_all_git="_pull_all_git $GIT_PATH_MAISON"
+    alias push_all_git="_push_all_git $GIT_PATH_MAISON"
+fi
 
 # ─── Git : config globale ─────────────────────────────────────────────────────
 
