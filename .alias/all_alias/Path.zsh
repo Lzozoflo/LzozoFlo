@@ -42,9 +42,11 @@ path_maison(){
     export dproject="$HOME/project"                                     # project
         export dtranscendence="$dproject/ft_transcendence/web"          # ├── ft_transcendence
         export ddotfile="$dproject/LzozoFlo"                            # ├── LzozoFlo
+        export dmarkdown="$dproject/Markdown"                           # ├── Markdown
         export dportfolio="$dproject/portfolio"                         # └── portfolio
-            export dpro="$dportfolio/Portfolio"                         #     └── Portfolio
+            export dpro="$dportfolio/Portfolio"                         #     ├── Portfolio    branch : main
+            export dpro="$dportfolio/readme"                            #     └── readme       branch : site_file
 
-    export GIT_PATH_MAISON="$dproject:$dtranscendence:$ddotfile:$dpro"
+    export GIT_PATH_MAISON="$dproject:$dtranscendence:$ddotfile:$dmarkdown:$dpro"
 
 }
