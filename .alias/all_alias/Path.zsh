@@ -45,7 +45,7 @@ path_maison(){
         export dmarkdown="$dproject/Markdown"                           # ├── Markdown
         export dportfolio="$dproject/portfolio"                         # └── portfolio
             export dpro="$dportfolio/Portfolio"                         #     ├── Portfolio    branch : main
-            export dpro="$dportfolio/readme"                            #     └── readme       branch : site_file
+            export dsite_file="$dportfolio/readme"                      #     └── readme       branch : site_file
 
     export GIT_PATH_MAISON="$dproject:$dtranscendence:$ddotfile:$dmarkdown:$dpro"
 
