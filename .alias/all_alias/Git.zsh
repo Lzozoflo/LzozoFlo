@@ -174,7 +174,7 @@ _push_all_git() {
     local paths=("${(@s/:/)1}")
     local count=0
 
-    print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
+    print_status info "Vérification des dépôts Git..."
 
     for repo in $paths; do
 
@@ -208,7 +208,7 @@ _pull_all_git() {
     local paths=("${(@s/:/)1}")
     local count=0
 
-    print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
+    print_status info "Vérification des dépôts Git..."
 
     for repo in $paths; do
 
