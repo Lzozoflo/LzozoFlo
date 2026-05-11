@@ -169,12 +169,11 @@ mymerge() {
 
 _push_all_git() {
 
-    # 1. On sépare la variable GIT_PATH_42 en utilisant le séparateur ':'
     # (s) divise la chaîne en tableau
     local paths=("${(@s/:/)1}")
     local count=0
 
-    print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
+    print_status info "Vérification des dépôts Git."
 
     for repo in $paths; do
 
@@ -203,12 +202,11 @@ _push_all_git() {
 
 _pull_all_git() {
 
-    # 1. On sépare la variable GIT_PATH_42 en utilisant le séparateur ':'
     # (s) divise la chaîne en tableau
     local paths=("${(@s/:/)1}")
     local count=0
 
-    print_status info "Vérification des dépôts Git dans GIT_PATH_42..."
+    print_status info "Vérification des dépôts Git."
 
     for repo in $paths; do
 

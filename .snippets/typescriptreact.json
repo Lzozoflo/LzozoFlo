@@ -77,5 +77,27 @@
 			"handleFetch();",
 			""
 		]
+	},
+	"onMouseDown": {
+		"prefix": "onMouseDown",
+		"body": [
+            "// onContextMenu={(e) => e.preventDefault()}",
+			"onMouseDown={(e) => {",
+			"     switch (e.button) {",
+			"          case 0:{",
+			"               console.log(`Left click`);",
+			"               break;",
+			"          }",
+			"          case 1:{",
+			"               console.log(`Center click`);",
+			"               break;",
+			"          }", 
+			"          case 2:{",
+			"               console.log(`Right click`);",
+			"               break;",
+			"          }",
+			"     }",
+			"}}",
+		]
 	}
 }
