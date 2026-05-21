@@ -21,6 +21,9 @@ path_42(){
         export dlibft="$dcc/libft"                                          # │   │   ├── libft
         export dwebserve="$dcc/webserv"                                     # │   └── webserv
                                                                             # │
+    export allcc=dcpp0:$dcpp2:$dcpp5:$dcpp7:$dcpp8:$dcpp9                   # │
+    export allcc=$allcc:$dtranscendence:$dlibft:$dwebserve                        # │
+                                                                            # │
     export dformation_extern="$dproject/formation_extern"                   # ├── formation_extern
         export dmatrix="$dformation_extern/Extensions_Matrix_42lyon"        # │   ├── Extensions_Matrix_42lyon
         export dhtml="$dformation_extern/HTML_CSS"                          # │   ├── HTML_CSS
@@ -28,14 +31,21 @@ path_42(){
         export dmarkdown="$dformation_extern/Markdown"                      # │   ├── Markdown
         export dpro="$dformation_extern/Portfolio"                          # │   ├── Portfolio
         export dreact="$dformation_extern/React"                            # │   ├── React
+        export droot="$dformation_extern/root_me"                           # │   ├── root_me
         export dtypescript="$dformation_extern/TypeScript"                  # │   └── TypeScript
                                                                             # │
+    export allextern=$dmatrix:$dhtml:$djavescript:$dpro:$dreact             # │
+    export allextern=$dmarkdown:$allextern:$droot:$dtypescript              # │
+                                                                            # │
     export dpostcc="$dproject/postcc"                                       # ├── postcc
-        export dlibasm="$dproject/libasm"                                   # │   ├── libasm
-        export dping="$dproject/ping"                                       # │   ├── ping
-        export dsnow="$dproject/SnowCrash"                                  # │   ├── SnowCrash
-    export GIT_PATH_42="$dcpp0:$dcpp2:$dcpp5:$dcpp7:$dcpp8:$dcpp9:$dformation_extern\
-:$dhtml:$djavescript:$dmarkdown:$dpro:$dreact:$dtypescript:$dtranscendence/..:$dlibasm:$dlibft:$dwebserve"
+        export dlibasm="$dpostcc/libasm"                                    # │   ├── libasm
+        export dping="$dpostcc/ping"                                        # │   ├── ping
+        export dsnow="$dpostcc/SnowCrash"                                   # │   ├── SnowCrash
+        export drain="$dpostcc/Rainfall"                                    # │   ├── Rainfall
+                                                                            # │
+    export allpostcc=$dlibasm:$dping:$dsnow:$dsnow:$drain                   # │
+
+    export GIT_PATH_42=$allcc:$allextern:$allpostcc
 
 }
 
