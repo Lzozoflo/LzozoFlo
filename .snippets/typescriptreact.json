@@ -6,6 +6,18 @@
 		],
 		"description": "Log output to console"
 	},
+	"base":{
+		"prefix": "base",
+		"body": [
+			"export default function $1() {",
+			"    return (",
+			"        <div className={`$1-root`}>",
+			"            <h1>Hello World</h1>$0",
+			"        </div>",
+			"    )",
+			"}"
+		]
+	},
 	"addheader": {
 		"prefix": "headertsx",
 		"body": [
@@ -23,8 +35,8 @@
 			"",
 			"/* Types */",
 			"//interface $1Props {",
-			"//    children: ReactNode;",
 			"//    className?: string;",
+			"//    children: ReactNode;",
 			"//}",
 			"",
 			"export default function $1() {",

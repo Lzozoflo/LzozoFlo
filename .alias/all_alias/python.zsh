@@ -1,0 +1,1 @@
+alias pv="uv run python3"

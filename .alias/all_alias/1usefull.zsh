@@ -49,7 +49,7 @@ place() {
 
 treecat() {
     local target="${1:-.}"
-    local output="${2:-out}"
+    local output="${2:-out.txt}"
 
 
     tree $target --gitignore -if -a \

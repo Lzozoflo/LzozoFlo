@@ -92,10 +92,47 @@ createtsx() {
     fi
 
     mkdir -p "$1"
-    touch "$1/$1.scss" "$1/$1.tsx"
-    print_status success "Composant '$1' créé."
+
+    # Génération du fichier SCSS
+    cat <<EOF > "$1/$1.scss"
+@use 'STYLE/mixin' as mix;
+@use 'STYLE/_variable' as *;
+
+.$1-root {
+   @include mix.full();
+   @include mix.center();
+
+}
+EOF
+
+    # Génération du fichier TSX
+    cat <<EOF > "$1/$1.tsx"
+/* Extern */
+import { useEffect, useState } from "react";
+
+
+/* Css */
+import './$1.scss';
+
+
+/* Components */
+
+
+/* Types */
+interface ${1}Props {
+    className?: string;
 }
 
+export default function $1({className} : ${1}Props) {
+    return (
+        <div className={\`$1-root\${className ? \` \${className}\`: ""}\`}>
+            <h1>Hello World</h1>
+        </div>
+    )
+}
+EOF
+    print_status success "Composant '$1' créé."
+}
 
 initreact() {
 
