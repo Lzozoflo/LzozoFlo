@@ -6,7 +6,7 @@
 <!-- 📘 🗎 🖋 👀 🗣 … -->
 <!-- Double-struck font -->
 <!-- 𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡 -->
-http://github.com/tandpfun/skill-icons#readme 
+<!-- http://github.com/tandpfun/skill-icons#readme  -->
 
 
 [Tag_View_count]: https://komarev.com/ghpvc/?username=LzozoFlo "I SEE 𝕐OU 👀"
