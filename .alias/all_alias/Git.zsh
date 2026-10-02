@@ -305,3 +305,25 @@ gitinit() {
 }
 
 
+
+
+
+
+# git submodule add <URL_DU_REPO_GITHUB> 
+
+# # 1. Désenregistrer le sous-module (vide le dossier localement)
+# git submodule deinit -f 42_cc/ft_printf
+
+
+# # 3. Nettoyer les fichiers de configuration interne de Git (.git/modules/)
+# rm -rf .git/modules/42_cc/ft_printf
+
+
+
+# git submodule sync
+
+# # Désinitialise l'ancien chemin pour repartir au propre
+# git submodule deinit -f perso/Parcours_de_formation
+
+# # Clone enfin le dépôt avec la bonne URL
+# git submodule update --init perso/Parcours_de_formation
