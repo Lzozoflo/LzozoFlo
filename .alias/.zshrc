@@ -23,3 +23,9 @@ if [[ "$HOME" == "/home/fcretin" ]]; then
     path_Repo_Project
     load_blueprint_export
 fi
+
+
+alias als='code $DIR_DOTFILE/.zshrc'
+alias alshome='code ~/.zshrc'
+alias sauce='source ~/.zshrc'
+source $HOME/.myzshrc
