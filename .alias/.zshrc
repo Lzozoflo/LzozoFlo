@@ -14,9 +14,11 @@ ln -sf $SNIPPETS $HOME/.config/Code/User/snippets
 
 alias alss='code $ALIAS'
 if [ -d "$ALIAS" ]; then
-    for file in $(find "$ALIAS" -name "*.zsh"); do
+    printf "all .dotfiles.alias sourced :\n\n"
+    while IFS= read -r file; do
         source "$file"
-    done
+        printf "Chargé : %s\n" "$file"
+    done < <(find "$ALIAS" -type f -name "*.zsh" ! -name ".zshrc")
 fi
 
 if [[ "$HOME" == "/home/fcretin" ]]; then
@@ -25,7 +27,7 @@ if [[ "$HOME" == "/home/fcretin" ]]; then
 fi
 
 
-alias als='code $DIR_DOTFILE/.zshrc'
-alias alshome='code ~/.zshrc'
-alias sauce='source ~/.zshrc'
-source $HOME/.myzshrc
+# alias als='code $DIR_DOTFILE'
+# alias alshome='code ~/.zshrc'
+# alias sauce='source ~/.zshrc'
+# source $HOME/.myzshrc

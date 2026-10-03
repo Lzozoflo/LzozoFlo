@@ -32,27 +32,31 @@ path(){
                                                                             # │   │
                                                                             # │   └── milestone__5
                                                                             # │       ├── cpp
-                export dcpp5 = "$d42cc/milestone_5/cpp/CPP_05"              # │       │   └── CPP_05
+                export dcpp5 = "$d42cc/milestone_5/cpp/CPP_05"              # │       │   ├── CPP_05
                 export dcpp6 = "$d42cc/milestone_5/cpp/CPP_06"              # │       │   ├── CPP_06
                 export dcpp7 = "$d42cc/milestone_5/cpp/CPP_07"              # │       │   ├── CPP_07
                 export dcpp8 = "$d42cc/milestone_5/cpp/CPP_08"              # │       │   ├── CPP_08
-                export dcpp8 = "$d42cc/milestone_5/cpp/CPP_09"              # │       │   ├── CPP_09
+                export dcpp8 = "$d42cc/milestone_5/cpp/CPP_09"              # │       │   └── CPP_09
             export dinception = "$d42cc/milestone_5/inception"              # │       ├── Inception
             export dwebserve = "$d42cc/milestone_5/webserve"                # │       └── webserv
         export allcc = $allcc:$dcpp5:$dcpp6:$dcpp7:$dcpp8:$dcpp9            # │
         export allcc = $allcc:$dinception:$dwebserve                        # │
                                                                             # │
     export d42postcc="$dproject/42_cc"                                      # ├── 42_post_cc
+                                                                            # │   │
+                                                                            # │   ├── piscine
+    export dpythondata="$d42postcc/piscine/Python_for_Data_Science"         # │   │   └── Python_for_Data_Science
+                                                                            # │   ├── rush
+    export dshmup="$d42postcc/rush/ft_shmup"                                # │   │   └── ft_shmup
+                                                                            # │   │
+    export davaj="$d42postcc/avaj-luncher"                                  # │   ├── avaj-luncher
+    export dping="$d42postcc/ft_ping"                                       # │   ├── ft_ping
+    export dlibasm="$d42postcc/libasm"                                      # │   ├── libasm
+    export dsnow="$d42postcc/SnowCrash"                                     # │   └── SnowCrash
+                                                                            #
+
         export allpostcc = "$d42postcc"                                     # │   │
         export allcc = ""                                                   # │   │
-                                                                            # │   ├── piscine
-                                                                            # │   │   └── Python_for_Data_Science
-                                                                            # │   ├── avaj-luncher
-                                                                            # │   ├── Craft_optimizer.fr
-                                                                            # │   ├── ft_ping
-                                                                            # │   ├── libasm
-                                                                            # │   └── SnowCrash
-                                                                            #
 
     export GIT_PATH_42=$allcc:$allpostcc
 
