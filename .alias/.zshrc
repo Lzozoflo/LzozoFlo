@@ -22,7 +22,7 @@ if [ -d "$ALIAS" ]; then
 fi
 
 if [[ "$HOME" == "/home/fcretin" ]]; then
-    path_Repo_Project
+    path
     load_blueprint_export
 fi
 
