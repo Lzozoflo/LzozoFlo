@@ -50,16 +50,18 @@ place() {
 treecat() {
     local target="${1:-.}"
     local output="${2:-out.txt}"
-
-
-    tree $target --gitignore -if -a \
-        -I "node_modules|package-lock.json|.git|idee_de_jeu.jpg" | while read -r file; do
-            if [ -f "$file" ]; then
+    
+    # Supprime l'ancien fichier de sortie s'il existe pour éviter d'écrire à la suite
+    rm -f "$output"
+    
+    # Correction ici : "test" au lieu de "test/*"
+    tree "$target" --gitignore -if -a -I "node_modules|package-lock.json|.git|idee_de_jeu.jpg" | while read -r file; do
+        if [ -f "$file" ]; then
             printf "\n\n--- FILE: %s ---\n" "$file" >> "$output"
             cat "$file" >> "$output"
         fi
     done
-
+    
     print_status success "Résultat écrit dans '$output'."
 }
 

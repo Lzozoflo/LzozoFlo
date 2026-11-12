@@ -25,6 +25,7 @@
         "    \"description\": \"${3:Description du snippet}\"",
         "}${4:,}"
     ]
-}
+},
+
 
 }

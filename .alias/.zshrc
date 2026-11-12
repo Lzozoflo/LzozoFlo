@@ -30,4 +30,24 @@ fi
 # alias als='code $DIR_DOTFILE'
 # alias alshome='code ~/.zshrc'
 # alias sauce='source ~/.zshrc'
-# source $HOME/.myzshrc
+# source $HOME/.lnLzozoflo.zshrc
+
+
+
+
+
+# code ~/.gitconfig 
+
+# [user]
+# 	name = Lzozoflo
+# 	email = florent.cretin@hotmail.fr
+# [pull]
+# 	rebase = false
+# [init]
+# 	defaultBranch = main
+# [commit]
+# 	template = /home/fcretin/.gitmessage
+# [submodule]
+# 	recurse = false
+# [push]
+# 	recurseSubmodules = on-demand
