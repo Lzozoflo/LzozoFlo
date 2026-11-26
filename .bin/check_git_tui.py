@@ -19,7 +19,6 @@ PREFIXES = [
     (escape("[docs]"), "[docs]"),
     (escape("[chore]"), "[chore]"),
     (escape("[test]"), "[test]"),
-    ("(aucun)", ""),
 ]
 
 
@@ -102,7 +101,7 @@ class GitCheckTUI(App):
                 yield ListView(id="files")
             yield RichLog(id="preview", markup=True, highlight=True)
         with Horizontal(id="bar"):
-            yield Select(PREFIXES, value="[fix]", allow_blank=False, id="prefix")
+            yield Select(PREFIXES, prompt="Préfixe...", value=Select.NULL, allow_blank=True, id="prefix")
             yield Input(placeholder="Message de commit...", id="msg")
             yield Button("Commit", variant="success", id="commit_btn")
             yield Button("Push", variant="primary", id="push_btn")
@@ -219,13 +218,16 @@ class GitCheckTUI(App):
             files = [p for _, p in self.current_files if p in self.selected_files]
             prefix = self.query_one("#prefix", Select).value
             msg = self.query_one("#msg", Input).value.strip()
+            if prefix == Select.NULL:
+                self.notify("Impossible : choisis un préfixe ([fix], [feat], etc.).", severity="error")
+                return
             if not files:
                 self.notify("Sélectionne au moins un fichier.", severity="warning")
                 return
             if not msg:
                 self.notify("Entre un message de commit.", severity="warning")
                 return
-            full_msg = f"{prefix} {msg}".strip()
+            full_msg = f"{prefix} {msg}"
             self.run_commit(self.current_repo, files, full_msg)
         elif event.button.id == "push_btn":
             self.run_push(self.current_repo)
@@ -240,8 +242,9 @@ class GitCheckTUI(App):
             self.call_from_thread(self.clear_msg_and_refresh)
         else:
             self.call_from_thread(self.notify, f"✗ Erreur commit : {res.stderr.strip()}", severity="error")
-
+    
     def clear_msg_and_refresh(self) -> None:
+        self.query_one("#prefix", Select).value = Select.NULL
         self.query_one("#msg", Input).value = ""
         self.action_refresh()
 
