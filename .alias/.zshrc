@@ -26,6 +26,7 @@ if [[ "$HOME" == "/home/fcretin" ]]; then
     load_blueprint_export
 fi
 
+export PATH="$HOME/Project/LzozoFlo/.alias/.bin:$PATH"
 
 # alias als='code $DIR_DOTFILE'
 # alias alshome='code ~/.zshrc'
