@@ -12,8 +12,6 @@ from textual.widgets import (
 )
 
 ROOT_REPO = Path.home() / "Project"
-MIN_COLS = 90
-MIN_LINES = 24
 PREFIXES = [
     (escape("[fix]"), "[fix]"),
     (escape("[feat]"), "[feat]"),
@@ -258,6 +256,8 @@ class GitCheckTUI(App):
         else:
             self.call_from_thread(self.notify, f"✗ Erreur push : {res.stderr.strip()}", severity="error")
 
+MIN_COLS = 80
+MIN_LINES = 24
 
 def check_terminal_size() -> None:
     size = shutil.get_terminal_size()
