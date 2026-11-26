@@ -1,13 +1,19 @@
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 from rich.markup import escape
 from rich.text import Text
-from textual import work
+from textual import events, work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog, Select, SelectionList
+from textual.widgets import (
+    Button, Footer, Header, Input, Label, ListItem, ListView, OptionList, RichLog, Select
+)
 
 ROOT_REPO = Path.home() / "Project"
+MIN_COLS = 90
+MIN_LINES = 24
 PREFIXES = [
     (escape("[fix]"), "[fix]"),
     (escape("[feat]"), "[feat]"),
@@ -17,6 +23,12 @@ PREFIXES = [
     (escape("[test]"), "[test]"),
     ("(aucun)", ""),
 ]
+
+
+class FileItem(ListItem):
+    def __init__(self, label: str, filepath: str) -> None:
+        super().__init__(Label(Text(label, no_wrap=True)))
+        self.filepath = filepath
 
 
 def get_active_submodules() -> list[str]:
@@ -67,15 +79,11 @@ class GitCheckTUI(App):
     #main { height: 1fr; }
     #left { width: 40%; height: 1fr; }
     #repos { height: 1fr; border: solid green; }
-    #files { height: 1fr; border: solid yellow; }
-    #files > .selection-list--button-selected {
-        background: #1e6b34;
-        color: #ffffff;
-    }
-    #files > .selection-list--button-selected-highlighted {
-        background: #288a44;
-        color: #ffffff;
-    }
+    #files { height: 1fr; border: solid yellow; overflow-x: auto; }
+    #files ListItem { width: auto; min-width: 100%; padding: 0 1; }
+    #files ListItem Label { width: auto; }
+    #files ListItem.selected { background: #1e6b34; color: #ffffff; text-style: bold; }
+    #files ListItem.selected.-highlight { background: #288a44; }
     #preview { width: 60%; border: solid cyan; }
     #bar { height: auto; margin-top: 1; }
     #prefix { width: 20; margin-right: 1; }
@@ -83,7 +91,7 @@ class GitCheckTUI(App):
     Button { margin-right: 1; }
     """
     BINDINGS = [
-        ("a", "toggle_files", "Tout cocher/décocher"),
+        ("a", "toggle_files", "Tout sélectionner/désélectionner"),
         ("r", "refresh", "Rafraîchir"),
         ("q", "quit", "Quitter"),
     ]
@@ -93,7 +101,7 @@ class GitCheckTUI(App):
         with Horizontal(id="main"):
             with Vertical(id="left"):
                 yield OptionList(id="repos")
-                yield SelectionList(id="files")
+                yield ListView(id="files")
             yield RichLog(id="preview", markup=True, highlight=True)
         with Horizontal(id="bar"):
             yield Select(PREFIXES, value="[fix]", allow_blank=False, id="prefix")
@@ -106,22 +114,24 @@ class GitCheckTUI(App):
         self.repos: list[str] = []
         self.current_repo: str | None = None
         self.current_files: list[tuple[str, str]] = []
+        self.selected_files: set[str] = set()
         self.action_refresh()
 
     def action_refresh(self) -> None:
         ol = self.query_one("#repos", OptionList)
-        fl = self.query_one("#files", SelectionList)
+        fl = self.query_one("#files", ListView)
         preview = self.query_one("#preview", RichLog)
 
         prev_repo = self.current_repo
         ol.clear_options()
-        fl.clear_options()
+        fl.clear()
         preview.clear()
 
         self.repos = get_active_submodules()
         if not self.repos:
             self.current_repo = None
             self.current_files = []
+            self.selected_files.clear()
             preview.write("[bold green]Tous les sous-modules sont propres et à jour.[/bold green]")
             return
 
@@ -137,30 +147,43 @@ class GitCheckTUI(App):
         if event.option_list.id == "repos" and 0 <= event.option_index < len(self.repos):
             self.load_repo(self.repos[event.option_index])
 
-    def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged) -> None:
-        self.refresh_file_styles()
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        if event.list_view.id == "files" and isinstance(event.item, FileItem):
+            self.toggle_file_item(event.item)
 
-    def refresh_file_styles(self) -> None:
-        fl = self.query_one("#files", SelectionList)
-        selected = set(fl.selected)
-        width = max(fl.size.width - 8, 20)
-        for i, (label, path) in enumerate(self.current_files):
-            if path in selected:
-                prompt = Text(label.ljust(width), style="bold white on #1e6b34")
-            else:
-                prompt = Text(label)
-            fl.replace_option_prompt_at_index(i, prompt)
+    def on_key(self, event: events.Key) -> None:
+        fl = self.query_one("#files", ListView)
+        if not fl.has_focus:
+            return
+        if event.key == "space" and isinstance(fl.highlighted_child, FileItem):
+            self.toggle_file_item(fl.highlighted_child)
+            event.stop()
+        elif event.key == "right":
+            fl.scroll_right()
+            event.stop()
+        elif event.key == "left":
+            fl.scroll_left()
+            event.stop()
+
+    def toggle_file_item(self, item: FileItem) -> None:
+        if item.filepath in self.selected_files:
+            self.selected_files.remove(item.filepath)
+            item.remove_class("selected")
+        else:
+            self.selected_files.add(item.filepath)
+            item.add_class("selected")
 
     def load_repo(self, repo: str) -> None:
         self.current_repo = repo
-        fl = self.query_one("#files", SelectionList)
+        self.selected_files.clear()
+        fl = self.query_one("#files", ListView)
         preview = self.query_one("#preview", RichLog)
-        fl.clear_options()
+        fl.clear()
         preview.clear()
 
         self.current_files = get_repo_files(repo)
         for label, path in self.current_files:
-            fl.add_option((label, path, False))
+            fl.append(FileItem(label, path))
 
         target = str(ROOT_REPO / repo)
         ahead = subprocess.run(
@@ -183,21 +206,23 @@ class GitCheckTUI(App):
             preview.write("[dim]Fichiers non suivis ou indexés uniquement.[/dim]")
 
     def action_toggle_files(self) -> None:
-        fl = self.query_one("#files", SelectionList)
-        if len(fl.selected) == fl.option_count:
-            fl.deselect_all()
-        else:
-            fl.select_all()
+        fl = self.query_one("#files", ListView)
+        items = list(fl.query(FileItem))
+        all_paths = {item.filepath for item in items}
+        select_all = self.selected_files != all_paths
+        self.selected_files = all_paths if select_all else set()
+        for item in items:
+            item.set_class(select_all, "selected")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if not self.current_repo:
             return
         if event.button.id == "commit_btn":
-            files = list(self.query_one("#files", SelectionList).selected)
+            files = [p for _, p in self.current_files if p in self.selected_files]
             prefix = self.query_one("#prefix", Select).value
             msg = self.query_one("#msg", Input).value.strip()
             if not files:
-                self.notify("Coche au moins un fichier.", severity="warning")
+                self.notify("Sélectionne au moins un fichier.", severity="warning")
                 return
             if not msg:
                 self.notify("Entre un message de commit.", severity="warning")
@@ -234,5 +259,17 @@ class GitCheckTUI(App):
             self.call_from_thread(self.notify, f"✗ Erreur push : {res.stderr.strip()}", severity="error")
 
 
+def check_terminal_size() -> None:
+    size = shutil.get_terminal_size()
+    if size.columns < MIN_COLS or size.lines < MIN_LINES:
+        print(
+            f"Erreur : terminal trop petit ({size.columns}x{size.lines}).\n"
+            f"Taille minimale requise : {MIN_COLS}x{MIN_LINES}.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+
 if __name__ == "__main__":
+    check_terminal_size()
     GitCheckTUI().run()
