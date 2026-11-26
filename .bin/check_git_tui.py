@@ -1,16 +1,25 @@
 import subprocess
 from pathlib import Path
 from rich.markup import escape
+from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal
-from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog
-# pip install textual
+from textual.containers import Horizontal, Vertical
+from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog, Select, SelectionList
 
 ROOT_REPO = Path.home() / "Project"
+PREFIXES = [
+    (escape("[fix]"), "[fix]"),
+    (escape("[feat]"), "[feat]"),
+    (escape("[refactor]"), "[refactor]"),
+    (escape("[docs]"), "[docs]"),
+    (escape("[chore]"), "[chore]"),
+    (escape("[test]"), "[test]"),
+    ("(aucun)", ""),
+]
 
 
-def get_dirty_submodules() -> list[str]:
+def get_active_submodules() -> list[str]:
     gitmodules = ROOT_REPO / ".gitmodules"
     if not gitmodules.exists():
         return []
@@ -19,30 +28,62 @@ def get_dirty_submodules() -> list[str]:
         ["git", "config", "--file", str(gitmodules), "--get-regexp", "path"],
         capture_output=True, text=True
     )
-    dirty = []
+    active = []
     for line in res.stdout.splitlines():
         path = line.split()[1]
         target = ROOT_REPO / path
         if (target / ".git").exists():
-            status = subprocess.run(
+            dirty = subprocess.run(
                 ["git", "-C", str(target), "status", "--porcelain"],
                 capture_output=True, text=True
+            ).stdout.strip()
+            ahead = subprocess.run(
+                ["git", "-C", str(target), "rev-list", "--count", "@{u}..HEAD"],
+                capture_output=True, text=True
             )
-            if status.stdout.strip():
-                dirty.append(path)
-    return dirty
+            has_unpushed = ahead.returncode == 0 and ahead.stdout.strip() not in ("", "0")
+            if dirty or has_unpushed:
+                active.append(path)
+    return active
+
+
+def get_repo_files(repo: str) -> list[tuple[str, str]]:
+    target = str(ROOT_REPO / repo)
+    res = subprocess.run(
+        ["git", "-c", "core.quotepath=false", "-C", target, "status", "--porcelain"],
+        capture_output=True, text=True
+    )
+    files = []
+    for line in res.stdout.splitlines():
+        if len(line) > 3:
+            status = line[:2]
+            filepath = line[3:].split(" -> ")[-1].strip('"')
+            files.append((f"{status} {filepath}", filepath))
+    return files
 
 
 class GitCheckTUI(App):
     CSS = """
     #main { height: 1fr; }
-    OptionList { width: 35%; border: solid green; }
-    RichLog { width: 65%; border: solid cyan; }
+    #left { width: 40%; height: 1fr; }
+    #repos { height: 1fr; border: solid green; }
+    #files { height: 1fr; border: solid yellow; }
+    #files > .selection-list--button-selected {
+        background: #1e6b34;
+        color: #ffffff;
+    }
+    #files > .selection-list--button-selected-highlighted {
+        background: #288a44;
+        color: #ffffff;
+    }
+    #preview { width: 60%; border: solid cyan; }
     #bar { height: auto; margin-top: 1; }
-    Input { width: 1fr; margin-right: 1; }
+    #prefix { width: 20; margin-right: 1; }
+    #msg { width: 1fr; margin-right: 1; }
+    Button { margin-right: 1; }
     """
     BINDINGS = [
-        ("p", "push_selected", "Push ce dépôt"),
+        ("a", "toggle_files", "Tout cocher/décocher"),
         ("r", "refresh", "Rafraîchir"),
         ("q", "quit", "Quitter"),
     ]
@@ -50,79 +91,147 @@ class GitCheckTUI(App):
     def compose(self) -> ComposeResult:
         yield Header()
         with Horizontal(id="main"):
-            yield OptionList(id="repos")
+            with Vertical(id="left"):
+                yield OptionList(id="repos")
+                yield SelectionList(id="files")
             yield RichLog(id="preview", markup=True, highlight=True)
         with Horizontal(id="bar"):
-            yield Input(placeholder="Message de commit (optionnel)", id="msg")
+            yield Select(PREFIXES, value="[fix]", allow_blank=False, id="prefix")
+            yield Input(placeholder="Message de commit...", id="msg")
+            yield Button("Commit", variant="success", id="commit_btn")
             yield Button("Push", variant="primary", id="push_btn")
         yield Footer()
 
     def on_mount(self) -> None:
-        self.dirty_repos: list[str] = []
+        self.repos: list[str] = []
+        self.current_repo: str | None = None
+        self.current_files: list[tuple[str, str]] = []
         self.action_refresh()
 
     def action_refresh(self) -> None:
         ol = self.query_one("#repos", OptionList)
+        fl = self.query_one("#files", SelectionList)
         preview = self.query_one("#preview", RichLog)
+
+        prev_repo = self.current_repo
         ol.clear_options()
+        fl.clear_options()
         preview.clear()
 
-        self.dirty_repos = get_dirty_submodules()
-        if not self.dirty_repos:
-            preview.write("[bold green]Tous les sous-modules sont propres.[/bold green]")
+        self.repos = get_active_submodules()
+        if not self.repos:
+            self.current_repo = None
+            self.current_files = []
+            preview.write("[bold green]Tous les sous-modules sont propres et à jour.[/bold green]")
             return
 
-        for repo in self.dirty_repos:
+        for repo in self.repos:
             ol.add_option(repo)
+
+        idx = self.repos.index(prev_repo) if prev_repo in self.repos else 0
+        ol.highlighted = idx
+        self.load_repo(self.repos[idx])
         ol.focus()
-        ol.highlighted = 0
-        self.show_preview(self.dirty_repos[0])
 
     def on_option_list_option_highlighted(self, event: OptionList.OptionHighlighted) -> None:
-        if 0 <= event.option_index < len(self.dirty_repos):
-            self.show_preview(self.dirty_repos[event.option_index])
+        if event.option_list.id == "repos" and 0 <= event.option_index < len(self.repos):
+            self.load_repo(self.repos[event.option_index])
 
-    def show_preview(self, repo: str) -> None:
+    def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged) -> None:
+        self.refresh_file_styles()
+
+    def refresh_file_styles(self) -> None:
+        fl = self.query_one("#files", SelectionList)
+        selected = set(fl.selected)
+        width = max(fl.size.width - 8, 20)
+        for i, (label, path) in enumerate(self.current_files):
+            if path in selected:
+                prompt = Text(label.ljust(width), style="bold white on #1e6b34")
+            else:
+                prompt = Text(label)
+            fl.replace_option_prompt_at_index(i, prompt)
+
+    def load_repo(self, repo: str) -> None:
+        self.current_repo = repo
+        fl = self.query_one("#files", SelectionList)
         preview = self.query_one("#preview", RichLog)
+        fl.clear_options()
         preview.clear()
-        target = str(ROOT_REPO / repo)
 
-        status = subprocess.run(["git", "-C", target, "status", "--short"], capture_output=True, text=True).stdout
-        diff = subprocess.run(["git", "-C", target, "diff", "--stat"], capture_output=True, text=True).stdout
+        self.current_files = get_repo_files(repo)
+        for label, path in self.current_files:
+            fl.add_option((label, path, False))
+
+        target = str(ROOT_REPO / repo)
+        ahead = subprocess.run(
+            ["git", "-C", target, "log", "@{u}..HEAD", "--oneline"],
+            capture_output=True, text=True
+        ).stdout.strip()
+        diff = subprocess.run(
+            ["git", "-C", target, "diff", "--stat"],
+            capture_output=True, text=True
+        ).stdout.strip()
 
         preview.write(f"[bold cyan]=== {escape(repo)} ===[/bold cyan]\n")
-        preview.write("[bold yellow]Status :[/bold yellow]")
-        preview.write(escape(status.strip()) or "[dim]Aucun changement non indexé[/dim]")
-        if diff.strip():
-            preview.write("\n[bold yellow]Diff :[/bold yellow]")
-            preview.write(escape(diff.strip()))
+        if ahead:
+            preview.write("[bold magenta]Commits à pousser :[/bold magenta]")
+            preview.write(escape(ahead) + "\n")
+        if diff:
+            preview.write("[bold yellow]Diff :[/bold yellow]")
+            preview.write(escape(diff))
+        elif not ahead:
+            preview.write("[dim]Fichiers non suivis ou indexés uniquement.[/dim]")
 
-    def action_push_selected(self) -> None:
-        ol = self.query_one("#repos", OptionList)
-        if ol.highlighted is None or not self.dirty_repos:
-            return
-        repo = self.dirty_repos[ol.highlighted]
-        msg = self.query_one("#msg", Input).value.strip()
-        self.run_push(repo, msg)
+    def action_toggle_files(self) -> None:
+        fl = self.query_one("#files", SelectionList)
+        if len(fl.selected) == fl.option_count:
+            fl.deselect_all()
+        else:
+            fl.select_all()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "push_btn":
-            self.action_push_selected()
+        if not self.current_repo:
+            return
+        if event.button.id == "commit_btn":
+            files = list(self.query_one("#files", SelectionList).selected)
+            prefix = self.query_one("#prefix", Select).value
+            msg = self.query_one("#msg", Input).value.strip()
+            if not files:
+                self.notify("Coche au moins un fichier.", severity="warning")
+                return
+            if not msg:
+                self.notify("Entre un message de commit.", severity="warning")
+                return
+            full_msg = f"{prefix} {msg}".strip()
+            self.run_commit(self.current_repo, files, full_msg)
+        elif event.button.id == "push_btn":
+            self.run_push(self.current_repo)
 
     @work(exclusive=True, thread=True)
-    def run_push(self, repo: str, msg: str) -> None:
+    def run_commit(self, repo: str, files: list[str], msg: str) -> None:
         target = str(ROOT_REPO / repo)
-        self.call_from_thread(self.notify, f"Push de {repo} en cours...")
-        if msg:
-            subprocess.run(["git", "-C", target, "add", "-A"], check=False)
-            subprocess.run(["git", "-C", target, "commit", "-m", msg], check=False)
-        res = subprocess.run(["git", "-C", target, "push"], capture_output=True, text=True)
+        subprocess.run(["git", "-C", target, "add", "--", *files], check=False)
+        res = subprocess.run(["git", "-C", target, "commit", "-m", msg], capture_output=True, text=True)
+        if res.returncode == 0:
+            self.call_from_thread(self.notify, f"✓ Commit créé : {msg}", severity="information")
+            self.call_from_thread(self.clear_msg_and_refresh)
+        else:
+            self.call_from_thread(self.notify, f"✗ Erreur commit : {res.stderr.strip()}", severity="error")
 
+    def clear_msg_and_refresh(self) -> None:
+        self.query_one("#msg", Input).value = ""
+        self.action_refresh()
+
+    @work(exclusive=True, thread=True)
+    def run_push(self, repo: str) -> None:
+        target = str(ROOT_REPO / repo)
+        self.call_from_thread(self.notify, f"Push de {repo}...")
+        res = subprocess.run(["git", "-C", target, "push"], capture_output=True, text=True)
         if res.returncode == 0:
             self.call_from_thread(self.notify, f"✓ {repo} poussé", severity="information")
             self.call_from_thread(self.action_refresh)
         else:
-            self.call_from_thread(self.notify, f"✗ Erreur : {res.stderr.strip()}", severity="error")
+            self.call_from_thread(self.notify, f"✗ Erreur push : {res.stderr.strip()}", severity="error")
 
 
 if __name__ == "__main__":
