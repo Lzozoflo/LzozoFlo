@@ -4,12 +4,14 @@
 alias remote='git remote -v'
 alias remote_add='git remote add'
 alias p='push'
-alias psuh='push'   # garde la faute de frappe pour la mémoire musculaire 😄
+alias psuh='push'   # la faute de frappe 😄
+
 
 alias mergedev='mymerge "dev/frontend-hot-reload"'
 alias pulldev='pullbranch "dev/frontend-hot-reload"'
 
 
+alias check_all_git="python3 $HOME/Project/LzozoFlo/.bin/check_git_tui.py"
 
 
 # ─── Git : état ──────────────────────────────────────────────────────────────

@@ -5,6 +5,7 @@ from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Button, Footer, Header, Input, OptionList, RichLog
+# pip install textual
 
 ROOT_REPO = Path.home() / "Project"
 
