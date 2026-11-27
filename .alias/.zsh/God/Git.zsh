@@ -12,6 +12,7 @@ alias pulldev='pullbranch "dev/frontend-hot-reload"'
 
 
 alias check_all_git="python3 $HOME/Project/LzozoFlo/.bin/check_git_tui.py"
+alias submodule="python3 $HOME/Project/LzozoFlo/.bin/git_submodule.py"
 
 
 # ─── Git : état ──────────────────────────────────────────────────────────────
